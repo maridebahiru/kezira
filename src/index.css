@@ -23,6 +23,16 @@
   font-family: var(--font-display);
 }
 
+.text-3xs {
+  font-size: 0.575rem;
+  line-height: 0.75rem;
+}
+
+.text-2xs {
+  font-size: 0.675rem;
+  line-height: 0.875rem;
+}
+
 /* Subtle Film Grain Overlay */
 .film-grain-canvas {
   position: absolute;

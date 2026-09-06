@@ -45,38 +45,38 @@ export const Countdown: React.FC<CountdownProps> = ({
   ];
 
   return (
-    <div className="relative z-20 mt-6 sm:mt-8 md:mt-10 mb-8 max-w-5xl mx-auto px-4">
-      <div className="glass-panel-gold rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
-        <div className="flex items-center gap-3 text-center md:text-left">
-          <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping" />
+    <div className="relative z-20 mt-4 sm:mt-8 md:mt-10 mb-6 sm:mb-8 max-w-5xl mx-auto px-3 sm:px-4">
+      <div className="glass-panel-gold rounded-2xl p-4 sm:p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 shadow-2xl">
+        <div className="flex items-center gap-2.5 sm:gap-3 text-center md:text-left">
+          <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping shrink-0" />
           <div>
-            <span className="text-3xs font-mono tracking-[0.25em] text-black uppercase block font-extrabold">
+            <span className="text-3xs font-mono tracking-[0.2em] sm:tracking-[0.25em] text-black uppercase block font-extrabold">
               COUNTDOWN TO OPENING
             </span>
-            <span className="text-sm sm:text-base font-serif text-black font-extrabold tracking-wide">
+            <span className="text-xs sm:text-base font-serif text-black font-extrabold tracking-wide">
               OCTOBER 3, 2026 — MIDER BABUR, DIRE DAWA
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-3 sm:gap-6 w-full md:w-auto">
+        <div className="grid grid-cols-4 gap-2 sm:gap-4 md:gap-6 w-full md:w-auto">
           {units.map((unit) => {
             const formattedVal = String(unit.value).padStart(2, '0');
             return (
               <div
                 key={unit.label}
-                className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl bg-white/90 border border-amber-400/50 shadow-md min-w-[70px] sm:min-w-[90px]"
+                className="flex flex-col items-center justify-center py-2.5 px-1.5 sm:p-4 rounded-xl bg-white/95 border border-amber-400/50 shadow-md min-w-0 sm:min-w-[85px]"
               >
                 <motion.span
                   key={formattedVal}
                   initial={{ opacity: 0.4, scale: 0.9, y: -4 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="text-2xl sm:text-4xl font-mono font-black text-black tracking-wider"
+                  className="text-xl sm:text-3xl md:text-4xl font-mono font-black text-black tracking-tight sm:tracking-wider leading-none"
                 >
                   {formattedVal}
                 </motion.span>
-                <span className="text-3xs font-mono tracking-widest text-slate-800 mt-1 uppercase font-bold">
+                <span className="text-[9px] sm:text-xs font-mono tracking-wider sm:tracking-widest text-slate-800 mt-1 sm:mt-1.5 uppercase font-bold whitespace-nowrap select-none">
                   {unit.label}
                 </span>
               </div>
