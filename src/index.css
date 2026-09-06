@@ -2,6 +2,8 @@
 
 @layer base {
   :root {
+    --background: #FAF8F5;
+    --foreground: #0f172a;
     --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-serif: 'Cormorant Garamond', Georgia, serif;
     --font-display: 'Syne', sans-serif;

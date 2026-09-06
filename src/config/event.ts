@@ -6,6 +6,11 @@ import asset10666 from '../assets/10666 [Converted].jpg';
 import artboard2 from '../assets/Artboard 1 copy 2-100.jpg';
 import artboard3 from '../assets/Artboard 1 copy 3-100.jpg';
 import artboard4 from '../assets/Artboard 1 copy 4-100.jpg';
+import panfalonImg from '../assets/panfalon.png';
+import tedyImg from '../assets/tedy.png';
+import rophnanImg from '../assets/rophnan.png';
+import kasmaselImg from '../assets/kasmasel.png';
+import asterImg from '../assets/aster.png';
 
 export interface HeroVideoConfig {
   id: string;
@@ -76,6 +81,50 @@ export interface VendorLogo {
   logoImage?: string;
 }
 
+export interface Artist {
+  id: string;
+  name: string;
+  role: string;
+  category: 'headliner' | 'ethio-electronic' | 'orchestral' | 'global-dj' | 'underground';
+  secondaryCategory?: 'headliner' | 'ethio-electronic' | 'orchestral' | 'global-dj' | 'underground';
+  stage: string;
+  time: string;
+  genre: string;
+  image: string;
+  bio: string;
+  badge?: string;
+  popularTrack?: string;
+  socials?: {
+    spotify?: string;
+    instagram?: string;
+    soundcloud?: string;
+  };
+}
+
+export interface ConcertTrailerChapter {
+  id: string;
+  title: string;
+  timestamp: string;
+  timeSec: number;
+  description: string;
+}
+
+export interface ConcertTrailerConfig {
+  videoUrl: string;
+  posterUrl: string;
+  title: string;
+  edition: string;
+  subtitle: string;
+  durationFormatted: string;
+  durationSec: number;
+  stats: {
+    value: string;
+    label: string;
+    detail: string;
+  }[];
+  chapters: ConcertTrailerChapter[];
+}
+
 export interface EventConfig {
   eventName: string;
   eventEdition: string;
@@ -86,6 +135,8 @@ export interface EventConfig {
   venueName: string;
   venueAddress: string;
   heroVideos: HeroVideoConfig[];
+  trailer: ConcertTrailerConfig;
+  artists: Artist[];
   about: {
     badge: string;
     title: string;
@@ -155,16 +206,125 @@ export const eventConfig: EventConfig = {
     },
   ],
 
-  about: {
-    badge: "ABOUT THE EVENT",
-    title: "REDEFINING THE LUXURY LIVE FESTIVAL IN EAST AFRICA",
-    description1: "KEZIRA is an immersive single-day festival curated for connoisseurs of world-class electronic, afro-fusion, and orchestral sound paired with avant-garde visual art.",
-    description2: "Set at the historic Mider Babur in Dire Dawa, this exclusive event runs from 9:00 AM to 9:00 PM (3:00 Morning until 3:00 Evening / 9:00 Local Time).",
+  trailer: {
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-party-crowd-raising-their-hands-in-a-concert-42878-large.mp4",
+    posterUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=2000&q=85",
+    title: "KEZIRA 2025 // OFFICIAL CINEMATIC RECAP",
+    edition: "PREVIOUS EDITION ARCHIVE",
+    subtitle: "Re-live the raw energy, laser skies, and electric crowd of last year's monumental gathering in Dire Dawa.",
+    durationFormatted: "02:45",
+    durationSec: 165,
     stats: [
-      { label: "ATTENDEES", value: "1200+" },
-      { label: "NATIONAL ARTISTS", value: "10+" },
-      { label: "IMMERSIVE EXPERIENCE", value: "1 DAY" },
-      { label: "AUDIO VISUAL STAGES", value: "4" },
+      { value: "10,000+", label: "CROWD ENERGY", detail: "Rave under celestial lasers" },
+      { value: "4 STAGES", label: "AUDIOVISUAL CANOPIES", detail: "Immersive 360° soundscapes" },
+      { value: "100%", label: "SOLD OUT EDITION", detail: "Historic attendance milestone" },
+      { value: "12 HRS", label: "PURE NIRVANA", detail: "From sunrise ritual to midnight finale" },
+    ],
+    chapters: [
+      {
+        id: "c1",
+        title: "01 // Opening Gates & Cultural Ritual",
+        timestamp: "00:15",
+        timeSec: 15,
+        description: "Artisan coffee ceremonies, ambient strings, and early festival arrivals.",
+      },
+      {
+        id: "c2",
+        title: "02 // Sunset Symphony on Grand Arena",
+        timestamp: "00:48",
+        timeSec: 48,
+        description: "Ethio-jazz masterclasses blending with analog synthesizers as dusk falls.",
+      },
+      {
+        id: "c3",
+        title: "03 // Laser Canopy & Hologram Genesis",
+        timestamp: "01:25",
+        timeSec: 85,
+        description: "500-drone visual formation dancing across the Dire Dawa night sky.",
+      },
+      {
+        id: "c4",
+        title: "04 // Midnight Finale & Fireworks",
+        timestamp: "02:10",
+        timeSec: 130,
+        description: "High-octane electronic peak and emotional curtain call.",
+      },
+    ],
+  },
+
+  artists: [
+    {
+      id: "panfalon",
+      name: "PANFALON",
+      role: "ETHIO-ELECTRONIC LIVE",
+      category: "ethio-electronic",
+      image: panfalonImg,
+      bio: "Dynamic visionary bridging vibrant electronic textures with iconic East African rhythms.",
+      badge: "LIVE PERFORMER",
+      stage: "GRAND CINEMATIC ARENA",
+      time: "3:00 PM (9:00 LOCAL)",
+      genre: "AFRO-ELECTRONIC",
+    },
+    {
+      id: "tedy",
+      name: "TEDDY AFRO",
+      role: "NATIONAL ICON",
+      category: "headliner",
+      image: tedyImg,
+      bio: "Ethiopia's most celebrated musical visionary delivering an emotional, once-in-a-lifetime sunset spectacle.",
+      badge: "LEGENDARY HEADLINER",
+      stage: "GRAND CINEMATIC ARENA",
+      time: "6:00 PM (12:00 LOCAL)",
+      genre: "ETHIOPIAN ANTHEMS",
+    },
+    {
+      id: "rophnan",
+      name: "ROPHNAN",
+      role: "ETHIO-ELECTRONIC PIONEER",
+      category: "ethio-electronic",
+      image: rophnanImg,
+      bio: "Revolutionizing East African electronic soundscapes by bridging indigenous pentatonic scales with future basslines.",
+      badge: "FUTURIST PIONEER",
+      stage: "SKYLINE STAGE",
+      time: "4:30 PM (10:30 LOCAL)",
+      genre: "AFRO-EDM / FUTURE ETHIO",
+    },
+    {
+      id: "kasmasel",
+      name: "KASMASSE",
+      role: "ANCHIHOYE PIONEER",
+      category: "headliner",
+      image: kasmaselImg,
+      bio: "Pioneering the Anchihoye electronic wave and modern sonic storytelling across East Africa.",
+      badge: "MODERN ICON",
+      stage: "SUNSET PALMS ARENA",
+      time: "7:30 PM (1:30 NIGHT LOCAL)",
+      genre: "ANCHIHOYE / CONTEMPORARY",
+    },
+    {
+      id: "aster",
+      name: "ASTER AWEKE",
+      role: "QUEEN OF ETHIOPIAN SOUL",
+      category: "headliner",
+      image: asterImg,
+      bio: "The legendary, inimitable Queen of Ethiopian music performing timeless soul anthems under the Dire Dawa sky.",
+      badge: "SOUL QUEEN",
+      stage: "ROYAL PAVILION",
+      time: "9:00 PM (3:00 NIGHT LOCAL)",
+      genre: "ETHIO-SOUL / JAZZ",
+    },
+  ],
+
+  about: {
+    badge: "THE KEZIRA MANIFESTO",
+    title: "WHERE LUXURY SOUND MEETS EAST AFRICAN SOUL",
+    description1: "One day. 1,200 curated guests. Unmatched acoustic clarity and visionary light architecture at the historic Mider Babur in Dire Dawa.",
+    description2: "A transcendent convergence from 9:00 AM to 9:00 PM (3:00 Morning to 3:00 Night local time).",
+    stats: [
+      { label: "ATTENDEES", value: "1,200" },
+      { label: "ICONIC ARTISTS", value: "12+" },
+      { label: "AUDIO STAGES", value: "4" },
+      { label: "IMMERSION", value: "12 HRS" },
     ],
     mediaPoster: asset10666,
   },
@@ -173,38 +333,38 @@ export const eventConfig: EventConfig = {
     {
       id: "hl-1",
       number: "01",
-      title: "LIVE ORCHESTRAL & ELECTRONIC HYBRIDS",
-      subtitle: "World-class DJs harmonized with a 40-piece live Ethiopian string ensemble.",
-      description: "A breathtaking acoustic boundary push where traditional instruments blend seamlessly with analog synthesizers and 3D spatial audio.",
+      title: "SYMPHONIC & SYNTHESIS HYBRID",
+      subtitle: "Live 40-piece strings colliding with modular synthesizers.",
+      description: "Traditional Ethiopian melodies woven into spatial 3D audio architectures.",
       image: artboard2,
-      tags: ["SYMPHONIC", "AFRO-HOUSE", "SPATIAL AUDIO"],
+      tags: ["ORCHESTRAL", "MODULAR SYNTH", "SPATIAL 3D"],
     },
     {
       id: "hl-2",
       number: "02",
-      title: "ROYAL SKY CABANAS & VIP LOUNGES",
-      subtitle: "Elevated private sanctuaries offering Michelin-level culinary pairings.",
-      description: "Dedicated concierge service, private champagne bars, and unobstructed panoramic elevated views of the main cinematic stage.",
+      title: "ROYAL SKY CABANAS & LOUNGES",
+      subtitle: "Elevated private sanctuaries with personal concierge.",
+      description: "Panoramic festival views, champagne service, and Michelin-inspired gastronomy.",
       image: artboard3,
-      tags: ["VIP ACCESS", "FINE GASTRONOMY", "CONCIERGE"],
+      tags: ["VIP ACCESS", "CONCIERGE", "CHAMPAGNE"],
     },
     {
       id: "hl-3",
       number: "03",
-      title: "ARCHITECTURAL LASER & HOLOGRAPHIC CANOPY",
-      subtitle: "Custom visual scapes projecting celestial geometry across the sky.",
-      description: "Designed by world-leading light architects, creating an ethereal dome of shifting lasers and volumetric smoke dynamics.",
+      title: "VOLUMETRIC LASER CANOPY",
+      subtitle: "Celestial light geometry transforming the night sky.",
+      description: "Synchronized drone swarms, 3D laser domes, and atmospheric haze architecture.",
       image: artboard4,
-      tags: ["LIGHT ARCHITECTURE", "HOLOGRAPHIC", "3D LASERS"],
+      tags: ["3D LASERS", "DRONE FORMATION", "LIGHT DOMES"],
     },
     {
       id: "hl-4",
       number: "04",
-      title: "FINE ETHIOPIAN GASTRONOMY & MIXOLOGY",
-      subtitle: "Curated multi-course tasting menus by master international chefs.",
-      description: "Pairing age-old spices and specialty Ethiopian coffees with rare vintages, craft mixology, and signature festival cocktails.",
+      title: "ARTISAN GASTRONOMY & MIXOLOGY",
+      subtitle: "Master tastings honoring age-old spices and specialty beans.",
+      description: "Artisan coffee ceremonies, craft botanical cocktails, and rare vintage tastings.",
       image: enkuImg,
-      tags: ["CUISINE", "MIXOLOGY", "ARTISAN COFFEE"],
+      tags: ["ETHIO-COFFEE", "BOTANICAL BAR", "FINE TASTINGS"],
     },
   ],
 
@@ -223,51 +383,51 @@ export const eventConfig: EventConfig = {
       items: [
         {
           time: "9:00 AM (3:00 Local)",
-          title: "DOORS OPEN & MORNING AMBIENT HARMONICS",
+          title: "GATES OPEN & ARTISAN COFFEE RITUAL",
           artist: "KEZIRA SOUND COLLECTIVE",
           stage: "SUNSET PALMS STAGE",
           category: "music",
-          description: "Morning doors open at 9:00 AM (3:00 Ethiopian Local Time). Artisan coffee ceremony & sound bath.",
+          description: "Morning doors open. Traditional Dire Dawa coffee ceremony and ambient string bath.",
         },
         {
-          time: "12:00 PM (6:00 Local)",
-          title: "MIDDAY ART EXHIBIT & GASTRONOMY TASTING",
-          artist: "ETHIOPIAN ARTISANS & CHEF ALMAZ",
+          time: "1:30 PM (7:30 Local)",
+          title: "SPATIAL SYMPHONIC STRINGS",
+          artist: "40-PIECE STRING ENSEMBLE",
           stage: "ROYAL PAVILION",
-          category: "art",
-          description: "Curated culinary tasting menu accompanied by acoustic jazz vinyl selections.",
+          category: "music",
+          description: "Acoustic exploration of indigenous Krar, Masinqo, and classical violins.",
         },
         {
           time: "3:00 PM (9:00 Local)",
-          title: "ETHIO-JAZZ & AFRO-HOUSE SYNTHESIS",
-          artist: "MULATU ASTATKE X BLACK COFFEE (HYBRID)",
+          title: "ETHIO-JAZZ & MODULAR SYNTHESIS",
+          artist: "MULATU ASTATKE // LIVE ENSEMBLE",
           stage: "GRAND CINEMATIC ARENA",
           category: "music",
-          description: "World-premiere collaboration blending legendary ethio-jazz rhythms with afro-house synthesizers.",
+          description: "The father of Ethio-Jazz in an exclusive festival composition.",
         },
         {
           time: "6:00 PM (12:00 Local)",
-          title: "SUNSET SYMPHONY & ETHIOPIAN ANTHEMS",
+          title: "SUNSET SYMPHONY & NATIONAL ANTHEMS",
           artist: "TEDDY AFRO X SPECIAL GUESTS",
           stage: "GRAND CINEMATIC ARENA",
           category: "music",
-          description: "A monumental performance uniting traditional anthems with cinematic stage production.",
+          description: "Golden hour performance uniting legendary anthems with cinema-grade visuals.",
         },
         {
-          time: "7:30 PM (1:30 Night Local)",
-          title: "HOLOGRAPHIC DRONE CANOPY & GENESIS SHOW",
-          artist: "ANYMA X KEZIRA ALL-STAR ENSEMBLE",
-          stage: "MAIN STAGE & SKYLINE",
+          time: "7:30 PM (1:30 Night)",
+          title: "3D HOLOGRAPHIC DRONE GENESIS",
+          artist: "ANYMA X KEZIRA LIGHT ARCHITECTS",
+          stage: "MAIN ARENA & SKYLINE",
           category: "music",
-          description: "Synchronized 500-drone light show and mind-bending 3D visual projection canopy.",
+          description: "500 synchronized drones and 3D visual projection canopy.",
         },
         {
-          time: "9:00 PM (3:00 Night Local)",
-          title: "ETERNAL CLOSING CURTAIN & GRAND FINALE",
-          artist: "SOLOMUN X GLOBAL RESIDENTS",
+          time: "9:00 PM (3:00 Night)",
+          title: "ETERNAL FINALE & CLOSING CURTAIN",
+          artist: "SOLOMUN X BLACK COFFEE",
           stage: "SKY GARDEN DOME",
           category: "vip",
-          description: "Final curtain call closing at 9:00 PM (3:00 Night Ethiopian Local Time / 9:00 Local).",
+          description: "Monumental closing set ending promptly at 9:00 PM / 3:00 Night Local.",
         },
       ],
     },
@@ -275,16 +435,16 @@ export const eventConfig: EventConfig = {
 
   venue: {
     name: "MIDER BABUR",
-    subtitle: "DIRE DAWA'S HISTORIC & ICONIC LANDMARK",
+    subtitle: "DIRE DAWA'S HISTORIC RAILWAY ICON",
     address: "Mider Babur, Dire Dawa, Ethiopia",
     coordinates: "9.5931° N, 41.8661° E",
-    description: "Located in the heart of Dire Dawa, Mider Babur is an iconic cultural landmark combining historic railway architecture with modern open-air festival grounds, luxury lounges, and volumetric light displays.",
+    description: "An iconic cultural landmark combining century-old railway architecture with cutting-edge open-air stages, luxury sky lounges, and 360° laser displays.",
     features: [
-      "Historic Heritage Railway Grounds",
-      "Executive VIP Lounge & Valet Parking",
-      "Thermal Spatial Audio Architecture",
+      "Historic Franco-Ethiopian Railway Grounds",
+      "Executive VIP Cabanas & Valet Parking",
+      "Thermal Spatial Audio Stage Systems",
       "360° Volumetric Laser Overhead Canopy",
-      "Dedicated High-Security VIP Entrances",
+      "Dedicated High-Speed VIP Express Gates",
     ],
     bgImage: asset10666,
     mapUrl: "https://maps.google.com/?q=Mider+Babur+Dire+Dawa+Ethiopia",
@@ -297,16 +457,16 @@ export const eventConfig: EventConfig = {
       badge: "POPULAR CHOICE",
       priceUSD: 150,
       priceETB: 8500,
-      description: "Full access to festival main arena, visual art installations, and general food courts from 9:00 AM to 9:00 PM (3:00 Morning to 3:00 Night Ethiopian time).",
+      description: "Full day access to 3 main stages, art pavilions, and artisan food gardens (9 AM – 9 PM / 3:00 - 9:00 Local).",
       availability: "SELLING FAST",
       availabilityPercentage: 82,
       colorTheme: "bronze",
       benefits: [
-        "Full Day General Arena Access (9:00 AM – 9:00 PM / 3:00 - 9:00 Local)",
-        "Access to 3 Main Sound Stages",
-        "Artisan Food & Beverage Courts",
-        "Commemorative RFID Festival Wristband",
-        "Digital Festival Experience Pass",
+        "Full Day General Arena Access (9 AM – 9 PM)",
+        "3 Cinematic Sound Stages",
+        "Artisan Food & Craft Bars",
+        "Commemorative RFID Wristband",
+        "Digital Festival Pass",
       ],
     },
     {
@@ -315,18 +475,18 @@ export const eventConfig: EventConfig = {
       badge: "RECOMMENDED",
       priceUSD: 450,
       priceETB: 25500,
-      description: "Elevated view platforms, fast-track VIP entry, complimentary champagne welcome, and sky lounge access.",
+      description: "Elevated sky viewing lounges, express fast-track gates, welcome champagne, and concierge access.",
       availability: "LIMITED TICKETS LEFT",
       availabilityPercentage: 91,
       featured: true,
       colorTheme: "gold",
       benefits: [
         "All General Pass Privileges Included",
-        "Dedicated VIP Fast-Track Express Gate",
-        "Access to Elevated VIP Sky Viewing Lounge",
-        "Complimentary Welcome Drink",
-        "Private VIP Restrooms",
-        "Exclusive VIP Bar & Gourmet Dining Lounge",
+        "VIP Fast-Track Express Gate",
+        "Elevated Sky Viewing Lounge",
+        "Complimentary Welcome Champagne",
+        "Private VIP Restrooms & Valet",
+        "Exclusive VIP Bar & Tasting Lounge",
       ],
     },
   ],
@@ -390,3 +550,5 @@ export const eventConfig: EventConfig = {
     { name: "TELEGRAM", url: "https://telegram.org", icon: "Send" },
   ],
 };
+
+export default eventConfig;

@@ -5,6 +5,8 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Countdown } from './components/Countdown';
 import { AboutSection } from './components/AboutSection';
+import { ConcertTrailerSection } from './components/ConcertTrailerSection';
+import { ArtistsSection } from './components/ArtistsSection';
 import { HighlightsSection } from './components/HighlightsSection';
 import { VendorLogoMarquee } from './components/VendorLogoMarquee';
 import { ScheduleSection } from './components/ScheduleSection';
@@ -90,8 +92,14 @@ export function App() {
           {/* Floating Countdown Bar */}
           <Countdown />
 
-          {/* About Festival Section */}
+          {/* Previous Edition 4K Concert Trailer & Recap */}
+          <ConcertTrailerSection />
+
+          {/* About Festival Section (Minimized punchy copy) */}
           <AboutSection />
+
+          {/* Star-Studded Festival Lineup & Sound Curators */}
+          <ArtistsSection />
 
           {/* Interactive Highlights */}
           <HighlightsSection />

@@ -25,7 +25,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTickets, onOpenAdmin }) =>
   }, []);
 
   const navLinks = [
+    { name: 'TRAILER', href: '#trailer' },
     { name: 'ABOUT', href: '#about' },
+    { name: 'ARTISTS', href: '#artists' },
     { name: 'EXPERIENCE', href: '#highlights' },
     { name: 'SCHEDULE', href: '#schedule' },
     { name: 'VENUE', href: '#venue' },
@@ -122,7 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTickets, onOpenAdmin }) =>
             <div className="flex flex-col gap-6">
               <div className="flex items-center justify-between border-b border-slate-200 pb-4">
                 <img src={logoImg} alt="KEZIRA Logo" className="h-14 w-auto object-contain" />
-                <span className="text-2xs font-mono text-amber-700 font-bold">ADDIS ABABA</span>
+                <span className="text-2xs font-mono text-amber-700 font-bold">DIRE DAWA</span>
               </div>
               <nav className="flex flex-col gap-4">
                 {navLinks.map((link) => (
