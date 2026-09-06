@@ -1,0 +1,11 @@
+.glow-cursor__canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  user-select: none;
+  z-index: 35;
+  filter: drop-shadow(0 0 8px rgba(185, 28, 28, 0.45)) drop-shadow(0 0 3px rgba(217, 119, 6, 0.6));
+}
