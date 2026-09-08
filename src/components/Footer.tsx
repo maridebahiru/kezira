@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Instagram, Youtube, Twitter, Music, Send, Check } from 'lucide-react';
 import { eventConfig } from '../config/event';
+import enkuuLogo from '../assets/enkuu.png';
 import logoImg from '../assets/logo.png';
+import mamshaLogo from '../assets/mamsha.png';
+import abshirLogo from '../assets/abshir logo.png';
 
 interface FooterProps {
   onOpenAdmin?: () => void;
@@ -42,17 +45,25 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-slate-200">
-          {/* Brand Info */}
+          {/* Brand Info & Main Logo */}
           <div className="md:col-span-5 flex flex-col items-start">
             <a
               href="#"
-              className="group inline-flex items-center mb-6 transition-transform duration-300 hover:scale-105"
+              className="group inline-flex items-center gap-3 mb-6 transition-transform duration-300 hover:scale-105"
             >
               <img
-                src={logoImg}
-                alt="KEZIRA Logo"
-                className="h-16 sm:h-22 md:h-28 w-auto object-contain"
+                src={enkuuLogo}
+                alt="ENQU EVENT Logo"
+                className="h-14 sm:h-18 md:h-22 w-auto object-contain"
               />
+              <div className="flex flex-col">
+                <span className="text-sm font-mono font-bold text-amber-800 tracking-widest uppercase">
+                  ENQU EVENT
+                </span>
+                <span className="text-2xs font-mono text-slate-500 uppercase tracking-wider">
+                  MAIN EVENT PRESENTER
+                </span>
+              </div>
             </a>
             <p className="text-xs sm:text-sm text-slate-600 font-light max-w-sm leading-relaxed mb-6">
               A synthesis of high sound design, luxury art installations, and elite hospitality set at Mider Babur, Dire Dawa, Ethiopia.

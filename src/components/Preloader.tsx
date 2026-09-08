@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import enkuuLogo from '../assets/enkuu.png';
 import logoImg from '../assets/logo.png';
 import mamshaLogo from '../assets/mamsha.png';
 import abshirLogo from '../assets/abshir logo.png';
-import enkuImg from '../assets/enku.jpg';
 
 export const Preloader: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -52,7 +52,7 @@ export const Preloader: React.FC = () => {
           >
             <div className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
             <span className="text-3xs font-mono tracking-[0.3em] text-amber-800 uppercase font-bold">
-              KEZIRA MEDIA PRESENTS
+              ENQU EVENT PRESENTS KEZIRA
             </span>
           </motion.div>
 
@@ -68,8 +68,8 @@ export const Preloader: React.FC = () => {
               <div className="absolute -inset-6 rounded-full bg-gradient-to-r from-amber-400/25 via-yellow-400/35 to-amber-500/25 blur-2xl animate-pulse" />
 
               <img
-                src={logoImg}
-                alt="KEZIRA Logo"
+                src={enkuuLogo}
+                alt="ENQU EVENT Logo"
                 className="relative h-28 sm:h-36 md:h-44 w-auto object-contain filter drop-shadow-[0_10px_25px_rgba(217,119,6,0.2)]"
               />
             </motion.div>
@@ -108,13 +108,22 @@ export const Preloader: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="flex items-center justify-center gap-5 sm:gap-6 opacity-75 hover:opacity-100 transition-opacity"
+              className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 opacity-85 hover:opacity-100 transition-opacity text-3xs font-mono tracking-wider text-slate-600"
             >
-              <img src={mamshaLogo} alt="Mamsha" className="h-5 sm:h-6 w-auto object-contain" />
-              <div className="h-3 w-px bg-slate-300" />
-              <img src={abshirLogo} alt="Abshir" className="h-5 sm:h-6 w-auto object-contain" />
-              <div className="h-3 w-px bg-slate-300" />
-              <img src={enkuImg} alt="Enku" className="h-5 w-5 sm:h-6 sm:w-6 object-cover rounded-full border border-amber-500/40 shadow-xs" />
+              <div className="flex items-center gap-2">
+                <img src={mamshaLogo} alt="MAMSHA" className="h-5 sm:h-6 w-auto object-contain" />
+                <span className="text-[10px] font-bold text-amber-700">EXCLUSIVE PARTNER</span>
+              </div>
+              <div className="h-3 w-px bg-slate-300 hidden sm:block" />
+              <div className="flex items-center gap-2">
+                <img src={logoImg} alt="KEZIRA MEDIA HUB" className="h-5 sm:h-6 w-auto object-contain" />
+                <span className="text-[10px] font-bold text-slate-700">MEDIA HUB</span>
+              </div>
+              <div className="h-3 w-px bg-slate-300 hidden sm:block" />
+              <div className="flex items-center gap-2">
+                <img src={abshirLogo} alt="ABSHIR PRODUCTION" className="h-5 sm:h-6 w-auto object-contain" />
+                <span className="text-[10px] font-bold text-slate-700">PRODUCTION</span>
+              </div>
             </motion.div>
           </div>
         </motion.div>

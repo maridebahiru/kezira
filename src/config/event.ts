@@ -11,6 +11,11 @@ import tedyImg from '../assets/tedy.png';
 import rophnanImg from '../assets/rophnan.png';
 import kasmaselImg from '../assets/kasmasel.png';
 import asterImg from '../assets/aster.png';
+import mamshaFestVideo from '../assets/MAMSHA FEST.mp4';
+import mamshaFest3Video from '../assets/MAMSHA FEST 3.mp4';
+import enkuuLogo from '../assets/enkuu.png';
+
+
 
 export interface HeroVideoConfig {
   id: string;
@@ -109,8 +114,16 @@ export interface ConcertTrailerChapter {
   description: string;
 }
 
+export interface ConcertTrailerVideoOption {
+  id: string;
+  title: string;
+  label: string;
+  src: string;
+}
+
 export interface ConcertTrailerConfig {
   videoUrl: string;
+  videoOptions: ConcertTrailerVideoOption[];
   posterUrl: string;
   title: string;
   edition: string;
@@ -176,18 +189,18 @@ export const eventConfig: EventConfig = {
   heroVideos: [
     {
       id: "chapter-01",
-      src: "https://assets.mixkit.co/videos/preview/mixkit-concert-crowd-cheering-under-laser-lights-42586-large.mp4",
-      poster: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=2000&q=85",
+      src: mamshaFestVideo,
+      poster: asset10666,
       title: "EXPERIENCE THE MOMENT",
-      subtitle: "CHAPTER I — THE SYMPHONY OF LIGHT & RESONANCE",
+      subtitle: "CHAPTER I — MAMSHA FESTIVAL HIGHLIGHTS",
       objectPosition: "center center",
       duration: 10,
       transitionType: "sweep",
     },
     {
       id: "chapter-02",
-      src: "https://assets.mixkit.co/videos/preview/mixkit-dj-playing-music-at-a-club-41398-large.mp4",
-      poster: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=2000&q=85",
+      src: mamshaFest3Video,
+      poster: artboard2,
       title: "FEEL THE ENERGY",
       subtitle: "CHAPTER II — ELECTRIFYING RHYTHMS OF DIRE DAWA",
       objectPosition: "50% 40%",
@@ -196,8 +209,8 @@ export const eventConfig: EventConfig = {
     },
     {
       id: "chapter-03",
-      src: "https://assets.mixkit.co/videos/preview/mixkit-light-show-at-a-music-concert-42880-large.mp4",
-      poster: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=2000&q=85",
+      src: mamshaFestVideo,
+      poster: artboard3,
       title: "LIVE THE EXPERIENCE",
       subtitle: "CHAPTER III — ETERNAL MEMORIES AT MIDER BABUR",
       objectPosition: "center top",
@@ -207,8 +220,22 @@ export const eventConfig: EventConfig = {
   ],
 
   trailer: {
-    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-party-crowd-raising-their-hands-in-a-concert-42878-large.mp4",
-    posterUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=2000&q=85",
+    videoUrl: mamshaFestVideo,
+    videoOptions: [
+      {
+        id: "mamsha-1",
+        title: "MAMSHA FESTIVAL — MAIN RECAP",
+        label: "CUT 01 (MAIN)",
+        src: mamshaFestVideo,
+      },
+      {
+        id: "mamsha-3",
+        title: "MAMSHA FESTIVAL — HIGH ENERGY",
+        label: "CUT 02 (EXTENDED)",
+        src: mamshaFest3Video,
+      },
+    ],
+    posterUrl: asset10666,
     title: "KEZIRA 2025 // OFFICIAL CINEMATIC RECAP",
     edition: "PREVIOUS EDITION ARCHIVE",
     subtitle: "Re-live the raw energy, laser skies, and electric crowd of last year's monumental gathering in Dire Dawa.",
@@ -317,13 +344,13 @@ export const eventConfig: EventConfig = {
 
   about: {
     badge: "THE KEZIRA MANIFESTO",
-    title: "WHERE LUXURY SOUND MEETS EAST AFRICAN SOUL",
-    description1: "One day. 1,200 curated guests. Unmatched acoustic clarity and visionary light architecture at the historic Mider Babur in Dire Dawa.",
+    title: "WHERE LUXURY SOUND, GAMES, ART & GASTRONOMY CONVERGE",
+    description1: "One day. 1,200 curated guests. High sound stages, next-gen gaming lounges (Pool, Table Tennis, Joteni, PS5), artisan foods & smoothie bars, live tattoo studios, and fine art galleries at historic Mider Babur.",
     description2: "A transcendent convergence from 9:00 AM to 9:00 PM (3:00 Morning to 3:00 Night local time).",
     stats: [
       { label: "ATTENDEES", value: "1,200" },
       { label: "ICONIC ARTISTS", value: "12+" },
-      { label: "AUDIO STAGES", value: "4" },
+      { label: "GAMING & ART ZONES", value: "6+" },
       { label: "IMMERSION", value: "12 HRS" },
     ],
     mediaPoster: asset10666,
@@ -333,46 +360,55 @@ export const eventConfig: EventConfig = {
     {
       id: "hl-1",
       number: "01",
-      title: "SYMPHONIC & SYNTHESIS HYBRID",
-      subtitle: "Live 40-piece strings colliding with modular synthesizers.",
-      description: "Traditional Ethiopian melodies woven into spatial 3D audio architectures.",
+      title: "NEXT-GEN GAMING & RECREATION ARENA",
+      subtitle: "Billiards Pool, Table Tennis, Joteni & PlayStation PS5 Hub.",
+      description: "Compete with friends in our air-conditioned gaming lounge featuring Pool tables, Ping Pong, Joteni (table football), and Next-Gen PS5 stations.",
       image: artboard2,
-      tags: ["ORCHESTRAL", "MODULAR SYNTH", "SPATIAL 3D"],
+      tags: ["POOL / BILLIARDS", "TABLE TENNIS", "JOTENI", "PS5 GAMING"],
     },
     {
       id: "hl-2",
       number: "02",
-      title: "ROYAL SKY CABANAS & LOUNGES",
-      subtitle: "Elevated private sanctuaries with personal concierge.",
-      description: "Panoramic festival views, champagne service, and Michelin-inspired gastronomy.",
-      image: artboard3,
-      tags: ["VIP ACCESS", "CONCIERGE", "CHAMPAGNE"],
+      title: "ARTISAN FOODS & ORGANIC SMOOTHIES",
+      subtitle: "Gourmet street bites, fresh smoothie blends & craft mixology.",
+      description: "Indulge in delicious gourmet food stalls, fresh-pressed tropical smoothie bars, and specialty coffee mixology.",
+      image: enkuImg,
+      tags: ["ARTISAN FOODS", "ORGANIC SMOOTHIES", "BOTANICAL BAR"],
     },
     {
       id: "hl-3",
       number: "03",
-      title: "VOLUMETRIC LASER CANOPY",
-      subtitle: "Celestial light geometry transforming the night sky.",
-      description: "Synchronized drone swarms, 3D laser domes, and atmospheric haze architecture.",
-      image: artboard4,
-      tags: ["3D LASERS", "DRONE FORMATION", "LIGHT DOMES"],
+      title: "LIVE TATTOO ARTISTS & TEMP BODY INK",
+      subtitle: "Professional tattoo studio & glam temporary metallic tattoos.",
+      description: "Get inked by top tattoo artists or adorn yourself with custom temporary tattoos, body paint, and festival glitter.",
+      image: artboard3,
+      tags: ["TATTOO ARTISTS", "TEMP TATTOOS", "BODY PAINT"],
     },
     {
       id: "hl-4",
       number: "04",
-      title: "ARTISAN GASTRONOMY & MIXOLOGY",
-      subtitle: "Master tastings honoring age-old spices and specialty beans.",
-      description: "Artisan coffee ceremonies, craft botanical cocktails, and rare vintage tastings.",
-      image: enkuImg,
-      tags: ["ETHIO-COFFEE", "BOTANICAL BAR", "FINE TASTINGS"],
+      title: "CONTEMPORARY FINE ART & LIVE CANVAS",
+      subtitle: "Live painting performances & fine art exhibitions.",
+      description: "Immerse yourself in live canvas creation, visual fine art showcases, and interactive art installations beside the music.",
+      image: artboard4,
+      tags: ["LIVE CANVAS", "FINE ART", "EXHIBITIONS"],
+    },
+    {
+      id: "hl-5",
+      number: "05",
+      title: "SYMPHONIC & SYNTHESIS MAIN ARENA",
+      subtitle: "Ethio-jazz masters, orchestral strings & afro-electronic peak.",
+      description: "Traditional Ethiopian melodies woven into spatial 3D audio architectures and drone canopy shows.",
+      image: asset10666,
+      tags: ["HEADLINERS", "SPATIAL 3D", "ETHIO-EDM"],
     },
   ],
 
   vendors: [
-    { id: "v1", name: "ABSHIR", category: "OFFICIAL PARTNER", logoText: "ABSHIR", symbol: "⚡", logoImage: abshirLogo },
-    { id: "v2", name: "ENKU", category: "MEDIA & CULTURAL PARTNER", logoText: "ENKU", symbol: "✦", logoImage: enkuImg },
-    { id: "v3", name: "KEZIRA", category: "BRAND PARTNER", logoText: "KEZIRA", symbol: "👑", logoImage: logoImg },
-    { id: "v4", name: "MAMSHA", category: "LUXURY HOSPITALITY", logoText: "MAMSHA", symbol: "🌟", logoImage: mamshaLogo },
+    { id: "v1", name: "ENQU EVENT", category: "MAIN EVENT PRESENTER", logoText: "ENQU EVENT", symbol: "👑", logoImage: enkuuLogo },
+    { id: "v2", name: "MAMSHA", category: "EXCLUSIVE PARTNER", logoText: "MAMSHA", symbol: "🌟", logoImage: mamshaLogo },
+    { id: "v3", name: "KEZIRA MEDIA HUB", category: "GRAPHICS, PHOTO & VIDEO", logoText: "KEZIRA MEDIA HUB", symbol: "✦", logoImage: logoImg },
+    { id: "v4", name: "ABSHIR PRODUCTION", category: "PRODUCTION", logoText: "ABSHIR PRODUCTION", symbol: "⚡", logoImage: abshirLogo },
   ],
 
   schedule: [
@@ -390,12 +426,28 @@ export const eventConfig: EventConfig = {
           description: "Morning doors open. Traditional Dire Dawa coffee ceremony and ambient string bath.",
         },
         {
+          time: "11:00 AM (5:00 Local)",
+          title: "GAMING ARENA & PS5 / POOL TOURNAMENT",
+          artist: "KEZIRA GAMING CLUB",
+          stage: "RECREATION & GAMING HUB",
+          category: "art",
+          description: "Pool (Billiards), Table Tennis, Joteni & PlayStation 5 gaming lounges open for festival guests.",
+        },
+        {
+          time: "12:30 PM (6:30 Local)",
+          title: "ARTISAN FOODS & SMOOTHIE BAR TASTINGS",
+          artist: "CHEF & MIXOLOGY COLLECTIVE",
+          stage: "GASTRONOMY GARDEN",
+          category: "art",
+          description: "Gourmet street foods and fresh tropical organic smoothie bars in full swing.",
+        },
+        {
           time: "1:30 PM (7:30 Local)",
-          title: "SPATIAL SYMPHONIC STRINGS",
-          artist: "40-PIECE STRING ENSEMBLE",
-          stage: "ROYAL PAVILION",
-          category: "music",
-          description: "Acoustic exploration of indigenous Krar, Masinqo, and classical violins.",
+          title: "SPATIAL SYMPHONIC STRINGS & LIVE TATTOO STUDIO",
+          artist: "40-PIECE ENSEMBLE & TATTOO ARTISTS",
+          stage: "ROYAL PAVILION & INK LOUNGE",
+          category: "art",
+          description: "Acoustic strings paired with live tattoo artist sessions & temporary body art creation.",
         },
         {
           time: "3:00 PM (9:00 Local)",
@@ -441,10 +493,12 @@ export const eventConfig: EventConfig = {
     description: "An iconic cultural landmark combining century-old railway architecture with cutting-edge open-air stages, luxury sky lounges, and 360° laser displays.",
     features: [
       "Historic Franco-Ethiopian Railway Grounds",
+      "Next-Gen Gaming Lounge (Pool, Table Tennis, Joteni & PS5)",
+      "Artisan Foods & Organic Tropical Smoothie Bars",
+      "Live Tattoo Studio & Temporary Body Art Pavilion",
+      "Fine Art & Live Canvas Gallery",
       "Executive VIP Cabanas & Valet Parking",
-      "Thermal Spatial Audio Stage Systems",
       "360° Volumetric Laser Overhead Canopy",
-      "Dedicated High-Speed VIP Express Gates",
     ],
     bgImage: asset10666,
     mapUrl: "https://maps.google.com/?q=Mider+Babur+Dire+Dawa+Ethiopia",
@@ -494,6 +548,38 @@ export const eventConfig: EventConfig = {
   gallery: [
     {
       id: "g1",
+      title: "NEXT-GEN RECREATION (POOL, PING PONG, JOTENI & PS5)",
+      category: "GAMING & GAMES",
+      src: artboard2,
+      type: "image",
+      aspectRatio: "wide",
+    },
+    {
+      id: "g2",
+      title: "ARTISAN FOODS & TROPICAL SMOOTHIE BAR",
+      category: "FOOD & SMOOTHIES",
+      src: enkuImg,
+      type: "image",
+      aspectRatio: "portrait",
+    },
+    {
+      id: "g3",
+      title: "LIVE TATTOO ARTISTS & TEMPORARY BODY INK",
+      category: "TATTOO & STYLE",
+      src: artboard3,
+      type: "image",
+      aspectRatio: "square",
+    },
+    {
+      id: "g4",
+      title: "CONTEMPORARY FINE ART & LIVE CANVAS EXHIBIT",
+      category: "FINE ART",
+      src: artboard4,
+      type: "image",
+      aspectRatio: "landscape",
+    },
+    {
+      id: "g5",
       title: "THE HYPNOTIC MAIN ARENA AT DUSK",
       category: "PERFORMANCE",
       src: asset10666,
@@ -501,44 +587,12 @@ export const eventConfig: EventConfig = {
       aspectRatio: "wide",
     },
     {
-      id: "g2",
-      title: "AERIAL LIGHT CANOPY & ARCHITECTURE",
-      category: "LIGHT SHOW",
-      src: artboard2,
-      type: "image",
-      aspectRatio: "portrait",
-    },
-    {
-      id: "g3",
-      title: "ROYAL VIP CHAMPAGNE PAVILION",
+      id: "g6",
+      title: "ROYAL VIP CHAMPAGNE LOUNGE",
       category: "VIP EXPERIENCE",
       src: artboard3,
       type: "image",
-      aspectRatio: "square",
-    },
-    {
-      id: "g4",
-      title: "ETHIOPIAN ORCHESTRA SOUND REHEARSAL",
-      category: "BEHIND THE SCENES",
-      src: artboard4,
-      type: "image",
-      aspectRatio: "landscape",
-    },
-    {
-      id: "g5",
-      title: "ENKU CULTURAL STAGE EXPERIENCE",
-      category: "ART INSTALLATIONS",
-      src: enkuImg,
-      type: "image",
       aspectRatio: "portrait",
-    },
-    {
-      id: "g6",
-      title: "CELESTIAL MIDNIGHT CROWD ENERGY",
-      category: "ATMOSPHERE",
-      src: asset10666,
-      type: "image",
-      aspectRatio: "wide",
     },
   ],
 

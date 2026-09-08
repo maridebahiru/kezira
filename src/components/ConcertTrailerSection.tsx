@@ -20,6 +20,7 @@ import { AudioVisualizerBars } from './AudioVisualizerBars';
 export const ConcertTrailerSection: React.FC = () => {
   const { trailer } = eventConfig;
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
@@ -27,6 +28,26 @@ export const ConcertTrailerSection: React.FC = () => {
   const [activeChapter, setActiveChapter] = useState<ConcertTrailerChapter | null>(null);
   const [isTheaterOpen, setIsTheaterOpen] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+
+  const currentVideo = trailer.videoOptions?.[selectedVideoIndex] || {
+    id: 'default',
+    title: trailer.title,
+    label: 'AFTERMOVIE',
+    src: trailer.videoUrl,
+  };
+
+  const handleSelectVideo = (index: number) => {
+    setSelectedVideoIndex(index);
+    setCurrentTime(0);
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+    }
+    if (isPlaying) {
+      setTimeout(() => {
+        videoRef.current?.play().then(() => setIsPlaying(true)).catch(() => {});
+      }, 100);
+    }
+  };
 
   // Format seconds to mm:ss
   const formatTime = (secs: number) => {
@@ -106,7 +127,7 @@ export const ConcertTrailerSection: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
         {/* Section Header: Punchy & Kinetic */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
             <motion.div
               initial={{ opacity: 0, y: 15 }}
@@ -146,6 +167,35 @@ export const ConcertTrailerSection: React.FC = () => {
           </motion.div>
         </div>
 
+        {/* Local Video Asset Switcher Tabs */}
+        {trailer.videoOptions && trailer.videoOptions.length > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-wrap items-center gap-3 mb-6"
+          >
+            <span className="text-3xs font-mono tracking-widest text-amber-400/80 uppercase font-bold">
+              AFTERMOVIE EDITIONS:
+            </span>
+            <div className="flex items-center gap-2.5">
+              {trailer.videoOptions.map((opt, idx) => (
+                <button
+                  key={opt.id}
+                  onClick={() => handleSelectVideo(idx)}
+                  className={`px-4 py-2 rounded-xl text-3xs font-mono tracking-wider uppercase transition-all duration-300 cursor-pointer border ${
+                    selectedVideoIndex === idx
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-400 text-black font-bold border-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)] scale-105'
+                      : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10 hover:border-amber-400/30'
+                  }`}
+                >
+                  {opt.title}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {/* Cinematic Video Stage Container */}
         <motion.div
           initial={{ opacity: 0, scale: 0.98, y: 30 }}
@@ -168,7 +218,7 @@ export const ConcertTrailerSection: React.FC = () => {
           >
             <video
               ref={videoRef}
-              src={trailer.videoUrl}
+              src={currentVideo.src}
               poster={trailer.posterUrl}
               muted={isMuted}
               loop
@@ -379,7 +429,7 @@ export const ConcertTrailerSection: React.FC = () => {
 
             <div className="relative max-w-6xl w-full aspect-video rounded-2xl overflow-hidden shadow-[0_0_80px_rgba(245,158,11,0.4)] border border-amber-500/40">
               <video
-                src={trailer.videoUrl}
+                src={currentVideo.src}
                 controls
                 autoPlay
                 className="w-full h-full object-cover"
