@@ -65,7 +65,8 @@ export const ticketService = {
         return cleaned;
       }
       return [];
-    } catch {
+    } catch (err) {
+      console.warn('Error reading orders from localStorage:', err);
       return [];
     }
   },

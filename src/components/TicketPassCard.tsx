@@ -151,8 +151,9 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
         ctx.drawImage(mainLogo, 70, 175, 120, 70);
         ctx.drawImage(mamsha, 250, 185, 100, 50);
         ctx.drawImage(abshir, 420, 185, 100, 50);
-        ctx.drawImage(enku, 590, 185, 100, 50);
-      } catch {}
+      } catch (logoErr) {
+        console.warn('Partner logo canvas draw warning:', logoErr);
+      }
 
       // Divider Line
       ctx.strokeStyle = '#E2E8F0';

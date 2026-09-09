@@ -66,9 +66,10 @@ const playAudioFeedback = (type: 'PASS' | 'FAIL') => {
       gain.gain.setValueAtTime(0.4, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
       osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.4);
     }
-  } catch {}
+  } catch (audioErr) {
+    console.warn('AudioContext playback warning:', audioErr);
+  }
 };
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose }) => {
