@@ -6,12 +6,10 @@ import {
   QrCode,
   Shield,
   ArrowRight,
-  Upload,
   CheckCircle2,
   Clock,
   Building2,
   FileCheck,
-  Search,
   AlertCircle,
   Phone,
   User,
@@ -36,21 +34,20 @@ export const TicketModal: React.FC<TicketModalProps> = ({
     initialTier || eventConfig.ticketTypes[1]
   );
   const [quantity, setQuantity] = useState(1);
-  const [step, setStep] = useState<'configure' | 'payment' | 'submitted' | 'lookup'>('configure');
+  const [step, setStep] = useState<'configure' | 'payment' | 'submitted'>('configure');
 
   // Customer Form Inputs
   const [customerName, setCustomerName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<OrderRecord['paymentMethod']>('Telebirr');
-  const [receiptFile, setReceiptFile] = useState<File | null>(null);
-  const [receiptPreviewUrl, setReceiptPreviewUrl] = useState<string>('');
+  // TEMP: replaces file-upload receipts to avoid needing the Blaze plan.
+  const [transactionRef, setTransactionRef] = useState<string>('');
   const [receiptError, setReceiptError] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Active Order State
   const [currentOrder, setCurrentOrder] = useState<OrderRecord | null>(null);
-  const [lookupQuery, setLookupQuery] = useState('');
-  const [lookupResult, setLookupResult] = useState<OrderRecord | null | undefined>(undefined);
 
   useEffect(() => {
     if (initialTier) {
@@ -62,31 +59,15 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
   const totalETB = selectedTier.priceETB * quantity;
 
-  // Handle Receipt Upload
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setReceiptFile(file);
-      setReceiptError(false);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setReceiptPreviewUrl(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Submit Order & Receipt
-  const handleSubmitPayment = (e: React.FormEvent) => {
+  // Submit Order (with transaction reference instead of a receipt file)
+  const handleSubmitPayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerName || !phone || !receiptPreviewUrl) {
+    if (!customerName || !phone || !transactionRef.trim()) {
       setReceiptError(true);
       return;
     }
 
-    const orderId = `KZ-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-    const newOrder: OrderRecord = {
-      id: orderId,
+    const orderData: Omit<OrderRecord, 'id'> = {
       customerName,
       phone,
       email,
@@ -95,24 +76,23 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       quantity,
       totalETB,
       paymentMethod,
-      receiptUrl: receiptPreviewUrl,
-      receiptFileName: receiptFile ? receiptFile.name : 'payment_receipt.png',
+      transactionRef: transactionRef.trim(),
       purchaseDate: new Date().toISOString().replace('T', ' ').substring(0, 16),
       status: 'PENDING_APPROVAL',
       checkedIn: false,
     };
 
-    ticketService.addOrder(newOrder);
-    setCurrentOrder(newOrder);
-    setStep('submitted');
-  };
-
-  // Order Lookup
-  const handleLookup = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!lookupQuery) return;
-    const found = ticketService.findOrder(lookupQuery);
-    setLookupResult(found || null);
+    try {
+      setIsSubmitting(true);
+      const newOrderId = await ticketService.addOrder(orderData);
+      setCurrentOrder({ ...orderData, id: newOrderId });
+      setStep('submitted');
+    } catch (err) {
+      console.error('Failed to submit order:', err);
+      setReceiptError(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -235,15 +215,8 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   onClick={() => setStep('payment')}
                   className="w-full py-4 rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-black font-extrabold text-xs sm:text-sm tracking-widest uppercase flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:brightness-110"
                 >
-                  <span>PROCEED TO PAYMENT & RECEIPT UPLOAD</span>
+                  <span>PROCEED TO PAYMENT</span>
                   <ArrowRight className="w-4 h-4" />
-                </button>
-                
-                <button
-                  onClick={() => setStep('lookup')}
-                  className="text-2xs font-mono text-amber-900 font-bold underline hover:text-slate-900 text-center uppercase tracking-widest cursor-pointer mt-1"
-                >
-                  ALREADY SUBMITTED? CHECK TICKET STATUS
                 </button>
               </div>
             </div>
@@ -331,51 +304,33 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   </select>
                 </div>
 
-                {/* File Uploader */}
+                {/* Transaction Reference (temporary stand-in for receipt upload) */}
                 <div>
                   <label className="block text-3xs font-mono font-bold text-slate-700 uppercase mb-1">
-                    UPLOAD RECEIPT / SCREENSHOT *
+                    TRANSACTION REFERENCE NUMBER *
                   </label>
-                  <label className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white border-2 border-dashed border-amber-400 hover:border-amber-600 transition-colors cursor-pointer">
-                    {receiptPreviewUrl ? (
-                      <div className="flex items-center gap-3 w-full">
-                        <img
-                          src={receiptPreviewUrl}
-                          alt="Receipt Preview"
-                          className="w-14 h-14 object-cover rounded-xl border border-amber-500 shadow-sm shrink-0"
-                        />
-                        <div className="overflow-hidden">
-                          <span className="text-xs font-mono font-bold text-slate-900 block truncate">
-                            {receiptFile ? receiptFile.name : 'Receipt Screenshot'}
-                          </span>
-                          <span className="text-3xs font-mono text-emerald-700 font-bold block flex items-center gap-1">
-                            <CheckCircle2 className="w-3 h-3" /> File ready for submission
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-1 text-center">
-                        <Upload className="w-6 h-6 text-amber-700" />
-                        <span className="text-xs font-mono font-bold text-slate-900">
-                          Click to upload Telebirr / Bank screenshot
-                        </span>
-                        <span className="text-3xs font-mono text-slate-500">
-                          PNG, JPG, JPEG, or PDF accepted
-                        </span>
-                      </div>
-                    )}
+                  <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border-2 border-dashed border-amber-400">
+                    <FileCheck className="w-6 h-6 text-amber-700 shrink-0" />
                     <input
-                      type="file"
-                      accept="image/*,.pdf"
-                      onChange={handleFileChange}
-                      className="hidden"
+                      type="text"
+                      required
+                      value={transactionRef}
+                      onChange={(e) => {
+                        setTransactionRef(e.target.value);
+                        setReceiptError(false);
+                      }}
+                      placeholder="e.g. TB240912.1830.A12345"
+                      className="w-full bg-transparent text-sm font-mono font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none"
                     />
-                  </label>
+                  </div>
+                  <span className="text-3xs font-mono text-slate-500 block mt-1">
+                    Copy this from your Telebirr / bank confirmation SMS or receipt.
+                  </span>
                 </div>
 
                 {receiptError && (
                   <span className="text-xs font-mono text-rose-700 flex items-center gap-1 font-bold">
-                    <AlertCircle className="w-4 h-4" /> Please fill your name, phone, and upload a valid receipt image!
+                    <AlertCircle className="w-4 h-4" /> Please fill your name, phone, and transaction reference number!
                   </span>
                 )}
 
@@ -389,9 +344,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   </button>
                   <button
                     type="submit"
-                    className="w-2/3 py-3.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs font-mono tracking-widest uppercase cursor-pointer shadow-md"
+                    disabled={isSubmitting}
+                    className="w-2/3 py-3.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs font-mono tracking-widest uppercase cursor-pointer shadow-md disabled:opacity-60"
                   >
-                    SUBMIT FOR ADMIN APPROVAL
+                    {isSubmitting ? 'SUBMITTING...' : 'SUBMIT FOR ADMIN APPROVAL'}
                   </button>
                 </div>
               </form>
@@ -426,9 +382,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                     <p><strong>Order Reference:</strong> {currentOrder.id}</p>
                     <p><strong>Phone:</strong> {currentOrder.phone}</p>
                     <p><strong>Payment Method:</strong> {currentOrder.paymentMethod}</p>
+                    <p><strong>Transaction Ref:</strong> {currentOrder.transactionRef}</p>
                   </div>
                   <p className="text-3xs font-mono text-slate-500 uppercase tracking-widest">
-                    Kezira Media admin will inspect your receipt screenshot. Once approved, your QR ticket code will unlock automatically!
+                    Kezira Media admin will verify your transaction reference. Once approved, your QR ticket code will unlock automatically!
                   </p>
                 </div>
               ) : (
@@ -438,94 +395,19 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                 </div>
               )}
 
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setStep('lookup')}
-                  className="w-1/2 py-3 rounded-full bg-slate-200 text-slate-900 font-mono text-xs font-bold uppercase"
-                >
-                  CHECK STATUS
-                </button>
-                <button
-                  onClick={onClose}
-                  className="w-1/2 py-3 rounded-full bg-amber-500 text-black font-extrabold text-xs font-mono uppercase shadow-md"
-                >
-                  CLOSE
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 4: ORDER LOOKUP */}
-          {step === 'lookup' && (
-            <div>
-              <h2 className="text-2xl font-serif font-bold text-slate-900 mb-2">
-                CHECK TICKET APPROVAL STATUS
-              </h2>
-              <p className="text-xs font-mono text-slate-600 mb-6">
-                Enter your Order ID (e.g. #KZ-2026-8801) or phone number to check if your receipt has been approved by admin.
+              {/* NOTE: self-service status lookup is disabled for now because
+                  Firestore rules only allow admins to read order data (this
+                  keeps customer phone numbers/names from being scraped).
+                  Save currentOrder.id somewhere for the customer, and point
+                  them to contact the organizers directly to check status. */}
+              <p className="text-3xs font-mono text-slate-500 mb-3">
+                Keep your Order Reference above. To check your approval status, message the organizers via Telegram with your Order ID.
               </p>
-
-              <form onSubmit={handleLookup} className="flex gap-2 mb-6">
-                <input
-                  type="text"
-                  required
-                  value={lookupQuery}
-                  onChange={(e) => setLookupQuery(e.target.value)}
-                  placeholder="Enter Order ID or Phone Number..."
-                  className="flex-1 py-3 px-4 rounded-xl bg-white border border-slate-300 text-xs font-mono text-slate-900 focus:outline-none focus:border-amber-500"
-                />
-                <button
-                  type="submit"
-                  className="px-6 py-3 rounded-xl bg-amber-500 text-black font-mono font-bold text-xs uppercase cursor-pointer"
-                >
-                  SEARCH
-                </button>
-              </form>
-
-              {lookupResult === null && (
-                <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-mono mb-6">
-                  No ticket order found matching '{lookupQuery}'. Please double-check your Order ID or phone number.
-                </div>
-              )}
-
-              {lookupResult && (
-                <div className="p-4 rounded-xl bg-white border border-amber-400 mb-6 text-xs font-mono space-y-2">
-                  <div className="flex justify-between items-center border-b pb-2">
-                    <span className="font-bold text-amber-900">{lookupResult.id}</span>
-                    <span
-                      className={`px-2 py-0.5 rounded text-3xs font-bold ${
-                        lookupResult.status === 'APPROVED' || lookupResult.status === 'CHECKED_IN'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : lookupResult.status === 'REJECTED'
-                          ? 'bg-rose-100 text-rose-800'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}
-                    >
-                      {lookupResult.status}
-                    </span>
-                  </div>
-                  <p><strong>Customer:</strong> {lookupResult.customerName}</p>
-                  <p><strong>Tier:</strong> {lookupResult.tierName} ({lookupResult.quantity} Pass)</p>
-                  <p><strong>Total:</strong> {lookupResult.totalETB.toLocaleString()} ETB</p>
-                  {lookupResult.status === 'APPROVED' && (
-                    <button
-                      onClick={() => {
-                        setCurrentOrder(lookupResult);
-                        setStep('submitted');
-                      }}
-                      className="w-full mt-2 py-2 rounded-lg bg-amber-500 text-black font-bold text-3xs uppercase"
-                    >
-                      VIEW APPROVED QR TICKET STUB
-                    </button>
-                  )}
-                </div>
-              )}
-
               <button
-                onClick={() => setStep('configure')}
-                className="w-full py-3 rounded-full bg-slate-200 text-slate-900 font-mono text-xs font-bold uppercase"
+                onClick={onClose}
+                className="w-full py-3 rounded-full bg-amber-500 text-black font-extrabold text-xs font-mono uppercase shadow-md"
               >
-                BACK TO RESERVATION
+                CLOSE
               </button>
             </div>
           )}

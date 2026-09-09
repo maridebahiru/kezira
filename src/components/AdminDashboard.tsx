@@ -13,13 +13,18 @@ import {
   ShieldAlert,
   Sparkles,
   FileCheck,
-  Eye,
   Check,
   XCircle,
   QrCode,
   Calendar,
-  Image as ImageIcon,
 } from 'lucide-react';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+} from 'firebase/auth';
+import { auth } from '../config/firebase';
 import { eventConfig, ScheduleItem } from '../config/event';
 import { ticketService, OrderRecord } from '../services/ticketService';
 import logoImg from '../assets/logo.png';
@@ -31,15 +36,15 @@ interface AdminDashboardProps {
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [passcode, setPasscode] = useState<string>('');
-  const [authError, setAuthError] = useState<boolean>(false);
+  const [authChecked, setAuthChecked] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>('maramawitdereje93@gmail.com');
+  const [password, setPassword] = useState<string>('maramawit@2112');
+  const [authError, setAuthError] = useState<string>('');
+  const [authLoading, setAuthLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'orders' | 'schedule'>('orders');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>(eventConfig.schedule[0].items);
-
-  // Receipt Modal Inspection State
-  const [inspectReceiptOrder, setInspectReceiptOrder] = useState<OrderRecord | null>(null);
 
   // New Schedule Item State
   const [showAddScheduleModal, setShowAddScheduleModal] = useState<boolean>(false);
@@ -49,42 +54,66 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
   const [newScheduleStage, setNewScheduleStage] = useState<string>('GRAND CINEMATIC ARENA');
   const [newScheduleCategory, setNewScheduleCategory] = useState<'music' | 'art' | 'vip' | 'keynote'>('music');
 
+  // Track Firebase Auth state (persists across reopening the dashboard)
   useEffect(() => {
-    if (isOpen) {
-      setOrders(ticketService.getOrders());
-    }
-  }, [isOpen]);
+    const unsubscribeAuth = onAuthStateChanged(auth, (user: any) => {
+      setIsAuthenticated(!!user);
+      setAuthChecked(true);
+    });
+    return () => unsubscribeAuth();
+  }, []);
+
+  // Live order feed from Firestore, only once signed in as admin
+  // (Firestore rules reject reads otherwise, so don't bother subscribing).
+  useEffect(() => {
+    if (!isOpen || !isAuthenticated) return;
+    const unsubscribeOrders = ticketService.subscribeOrders(setOrders);
+    return () => unsubscribeOrders();
+  }, [isOpen, isAuthenticated]);
 
   if (!isOpen) return null;
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode === '1234' || passcode.toLowerCase() === 'admin' || passcode === '') {
-      setIsAuthenticated(true);
-      setAuthError(false);
-    } else {
-      setAuthError(true);
+    setAuthError('');
+    setAuthLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // onAuthStateChanged above will flip isAuthenticated to true
+    } catch (err: any) {
+      // If user does not exist in Firebase Auth yet, automatically register account
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } catch (createErr: any) {
+        setAuthError('Authentication failed. Check your email & password.');
+      }
+    } finally {
+      setAuthLoading(false);
     }
   };
 
-  const handleApproveOrder = (orderId: string) => {
-    const updated = ticketService.updateOrderStatus(orderId, 'APPROVED');
-    setOrders(updated);
+  const handleLogout = async () => {
+    await signOut(auth);
+    setOrders([]);
   };
 
-  const handleRejectOrder = (orderId: string) => {
-    const updated = ticketService.updateOrderStatus(orderId, 'REJECTED', 'Receipt verification failed');
-    setOrders(updated);
+  const handleApproveOrder = async (orderId: string) => {
+    await ticketService.updateOrderStatus(orderId, 'APPROVED');
+    // No local state update needed — the live subscription updates it.
   };
 
-  const handleToggleCheckIn = (orderId: string) => {
-    const updated = ticketService.toggleCheckIn(orderId);
-    setOrders(updated);
+  const handleRejectOrder = async (orderId: string) => {
+    await ticketService.updateOrderStatus(orderId, 'REJECTED', 'Transaction reference could not be verified');
   };
 
-  const handleDeleteOrder = (orderId: string) => {
-    const updated = ticketService.deleteOrder(orderId);
-    setOrders(updated);
+  const handleToggleCheckIn = async (orderId: string) => {
+    const order = orders.find((o) => o.id === orderId);
+    if (!order) return;
+    await ticketService.toggleCheckIn(orderId, order.checkedIn);
+  };
+
+  const handleDeleteOrder = async (orderId: string) => {
+    await ticketService.deleteOrder(orderId);
   };
 
   const handleAddScheduleItem = (e: React.FormEvent) => {
@@ -171,12 +200,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                 </span>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 rounded-full bg-slate-800 hover:bg-amber-500 text-slate-400 hover:text-black transition-colors cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              {isAuthenticated && (
+                <button
+                  onClick={handleLogout}
+                  className="px-3 py-2 rounded-full bg-slate-800 hover:bg-rose-500/80 text-slate-400 hover:text-white transition-colors cursor-pointer text-3xs font-mono font-bold uppercase"
+                >
+                  Sign Out
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                className="p-2 rounded-full bg-slate-800 hover:bg-amber-500 text-slate-400 hover:text-black transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           {!isAuthenticated ? (
@@ -189,27 +228,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                 ADMIN AUTHENTICATION
               </h2>
               <p className="text-xs sm:text-sm text-slate-400 font-light max-w-sm mb-8">
-                Enter your PIN code to inspect payment receipts, approve tickets, and manage event operations.
+                Sign in with your admin account to verify transaction references, approve tickets, and manage event operations.
               </p>
 
               <form onSubmit={handleLogin} className="w-full max-w-sm flex flex-col gap-4">
                 <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Admin email"
+                  className="w-full py-3.5 px-4 rounded-xl bg-slate-950 border border-slate-700 text-center font-mono text-base text-white focus:outline-none focus:border-amber-500 transition-colors shadow-inner"
+                />
+                <input
                   type="password"
-                  value={passcode}
-                  onChange={(e) => setPasscode(e.target.value)}
-                  placeholder="Enter PIN (e.g. 1234 or leave blank)..."
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
                   className="w-full py-3.5 px-4 rounded-xl bg-slate-950 border border-slate-700 text-center font-mono text-base text-white focus:outline-none focus:border-amber-500 transition-colors shadow-inner"
                 />
                 {authError && (
                   <span className="text-xs font-mono text-rose-400 flex items-center justify-center gap-1">
-                    <ShieldAlert className="w-3.5 h-3.5" /> Incorrect PIN code. Try '1234'.
+                    <ShieldAlert className="w-3.5 h-3.5" /> {authError}
                   </span>
                 )}
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-black font-extrabold text-xs sm:text-sm tracking-widest uppercase cursor-pointer shadow-lg hover:brightness-110 transition-all"
+                  disabled={authLoading}
+                  className="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-black font-extrabold text-xs sm:text-sm tracking-widest uppercase cursor-pointer shadow-lg hover:brightness-110 transition-all disabled:opacity-60"
                 >
-                  ACCESS DASHBOARD
+                  {authLoading ? 'SIGNING IN...' : 'ACCESS DASHBOARD'}
                 </button>
               </form>
             </div>
@@ -362,18 +411,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                                 <td className="p-4 font-bold">{order.quantity}</td>
                                 <td className="p-4 font-bold text-slate-100">{order.totalETB.toLocaleString()} ETB</td>
                                 
-                                {/* Receipt Inspection Button */}
+                                {/* Transaction Reference (temp stand-in for receipt upload) */}
                                 <td className="p-4">
-                                  {order.receiptUrl ? (
-                                    <button
-                                      onClick={() => setInspectReceiptOrder(order)}
-                                      className="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold text-3xs flex items-center gap-1.5 cursor-pointer transition-colors"
-                                    >
-                                      <Eye className="w-3.5 h-3.5" />
-                                      <span>VIEW PROOF</span>
-                                    </button>
+                                  {order.transactionRef ? (
+                                    <span className="px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/30 font-mono text-3xs inline-block">
+                                      {order.transactionRef}
+                                    </span>
                                   ) : (
-                                    <span className="text-3xs text-slate-500 italic">No upload</span>
+                                    <span className="text-3xs text-slate-500 italic">No reference</span>
                                   )}
                                 </td>
 
@@ -492,77 +537,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
           )}
         </motion.div>
       </div>
-
-      {/* INSPECT RECEIPT PROOF MODAL */}
-      {inspectReceiptOrder && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl">
-          <div className="w-full max-w-xl bg-slate-900 border border-amber-500/50 p-6 rounded-3xl text-slate-100 shadow-2xl">
-            <div className="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
-              <div>
-                <span className="text-3xs font-mono text-amber-400 uppercase font-bold block">
-                  PAYMENT RECEIPT INSPECTOR
-                </span>
-                <h3 className="text-lg font-serif font-bold text-white">
-                  ORDER {inspectReceiptOrder.id} ({inspectReceiptOrder.customerName})
-                </h3>
-              </div>
-              <button
-                onClick={() => setInspectReceiptOrder(null)}
-                className="p-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs font-mono mb-6">
-              <div className="grid grid-cols-2 gap-2 p-3 rounded-xl bg-slate-950 border border-slate-800">
-                <p><strong>Amount:</strong> {inspectReceiptOrder.totalETB.toLocaleString()} ETB</p>
-                <p><strong>Pass Tier:</strong> {inspectReceiptOrder.tierName}</p>
-                <p><strong>Method:</strong> {inspectReceiptOrder.paymentMethod}</p>
-                <p><strong>Phone:</strong> {inspectReceiptOrder.phone}</p>
-              </div>
-
-              {/* Receipt Image Box */}
-              <div className="relative rounded-2xl overflow-hidden border border-amber-500/30 bg-slate-950 p-2 max-h-[50vh] flex items-center justify-center">
-                {inspectReceiptOrder.receiptUrl ? (
-                  <img
-                    src={inspectReceiptOrder.receiptUrl}
-                    alt="Receipt Screenshot"
-                    className="max-h-[45vh] w-auto object-contain rounded-xl"
-                  />
-                ) : (
-                  <div className="py-12 text-slate-500 flex flex-col items-center">
-                    <ImageIcon className="w-12 h-12 mb-2" />
-                    <span>No receipt preview available</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Quick Action Buttons inside Inspector */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  handleApproveOrder(inspectReceiptOrder.id);
-                  setInspectReceiptOrder(null);
-                }}
-                className="w-1/2 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs font-mono uppercase flex items-center justify-center gap-2 cursor-pointer shadow-md"
-              >
-                <Check className="w-4 h-4" /> APPROVE & ISSUE QR
-              </button>
-              <button
-                onClick={() => {
-                  handleRejectOrder(inspectReceiptOrder.id);
-                  setInspectReceiptOrder(null);
-                }}
-                className="w-1/2 py-3 rounded-xl bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/40 font-bold text-xs font-mono uppercase flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <XCircle className="w-4 h-4" /> REJECT PAYMENT
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Add Schedule Item Modal */}
       {showAddScheduleModal && (

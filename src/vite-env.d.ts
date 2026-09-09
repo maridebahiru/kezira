@@ -30,3 +30,8 @@ declare module '*.mp4' {
   export default value;
 }
 
+declare module 'firebase/app';
+declare module 'firebase/analytics';
+declare module 'firebase/auth';
+declare module 'firebase/firestore';
+
