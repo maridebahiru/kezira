@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import enkuuLogo from '../assets/enkuu.png';
 import logoImg from '../assets/logo.png';
-import mamshaLogo from '../assets/mamsha.png';
+import mamshaLogo from '../assets/enkuu.png';
 import abshirLogo from '../assets/abshir logo.png';
 
 export const Preloader: React.FC = () => {

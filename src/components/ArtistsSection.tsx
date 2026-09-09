@@ -3,8 +3,8 @@ import { eventConfig } from '../config/event';
 import { ArtistsShowcase, Artist } from './ui/artists-showcase';
 
 export const ArtistsSection: React.FC = () => {
-  // 5 premier artists using the cutout assets: panfalon, tedy, rophnan, kasmasel, aster
-  const artists: Artist[] = eventConfig.artists.slice(0, 5).map((a) => ({
+  // 3 premier acts: DJ KAL (Left), THE ARTISTS (Middle), DJ LUNA (Right)
+  const artists: Artist[] = eventConfig.artists.map((a) => ({
     name: a.name,
     imageSrc: a.image,
     imageAlt: `Portrait of ${a.name}`,

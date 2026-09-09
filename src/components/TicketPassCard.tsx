@@ -4,7 +4,7 @@ import { OrderRecord } from '../services/ticketService';
 import logoImg from '../assets/logo.png';
 import abshirLogo from '../assets/abshir logo.png';
 import enkuImg from '../assets/enku.jpg';
-import mamshaLogo from '../assets/mamsha.png';
+import mamshaLogo from '../assets/enkuu.png';
 
 interface TicketPassCardProps {
   order: OrderRecord;

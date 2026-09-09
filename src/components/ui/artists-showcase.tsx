@@ -54,9 +54,10 @@ export const ArtistsShowcase = ({
           </motion.div>
 
           {/* Row of artists standing in front of the spotlight */}
-          <div className="relative z-10 flex items-end justify-center w-full max-w-full gap-1 sm:gap-4 md:gap-6 px-1 sm:px-4">
+          <div className="relative z-10 flex items-end justify-center w-full max-w-full gap-3 sm:gap-6 md:gap-10 px-2 sm:px-6">
             {artists.map((artist, index) => {
               const isCurrent = activeIndex === index;
+              const isMiddle = index === Math.floor(artists.length / 2);
 
               return crop === 'circular' ? (
                 <motion.div
@@ -71,13 +72,15 @@ export const ArtistsShowcase = ({
                   }}
                   whileHover={{ y: -6, scale: 1.08 }}
                   whileTap={{ y: -2, scale: 1.04 }}
-                  style={{ zIndex: isCurrent ? 30 : index + 1 }}
+                  style={{ zIndex: isCurrent ? 30 : isMiddle ? 20 : index + 1 }}
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                   onClick={() => handleArtistClick(index)}
                   className={cn(
                     'group relative rounded-full overflow-hidden border-2 bg-slate-100 shadow-xl shrink min-w-0 cursor-pointer transition-all duration-300',
-                    'h-12 w-12 sm:h-24 sm:w-24 md:h-32 md:w-32 lg:h-40 lg:w-40',
+                    isMiddle
+                      ? 'h-16 w-16 sm:h-32 sm:w-32 md:h-40 md:w-40 lg:h-48 lg:w-48'
+                      : 'h-12 w-12 sm:h-24 sm:w-24 md:h-32 md:w-32 lg:h-40 lg:w-40',
                     isCurrent
                       ? 'border-amber-400 ring-2 ring-amber-400/50 shadow-amber-300/50'
                       : 'border-white'
@@ -116,7 +119,7 @@ export const ArtistsShowcase = ({
                     scale: 1.03,
                     transition: { duration: 0.15, ease: 'easeOut' },
                   }}
-                  style={{ zIndex: isCurrent ? 30 : index + 1 }}
+                  style={{ zIndex: isCurrent ? 30 : isMiddle ? 20 : index + 1 }}
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                   onClick={() => handleArtistClick(index)}
@@ -126,9 +129,10 @@ export const ArtistsShowcase = ({
                     src={artist.imageSrc}
                     alt={artist.imageAlt || `Portrait of ${artist.name}`}
                     className={cn(
-                      'h-[160px] sm:h-[260px] md:h-[340px] lg:h-[410px]',
-                      'w-auto max-w-[17vw] sm:max-w-[130px] md:max-w-[175px] lg:max-w-[210px]',
-                      'object-contain object-bottom transition-all duration-300',
+                      isMiddle
+                        ? 'h-[185px] sm:h-[295px] md:h-[385px] lg:h-[455px] max-w-[34vw] sm:max-w-[240px] md:max-w-[310px] lg:max-w-[380px]'
+                        : 'h-[150px] sm:h-[240px] md:h-[320px] lg:h-[380px] max-w-[26vw] sm:max-w-[180px] md:max-w-[240px] lg:max-w-[290px]',
+                      'w-auto object-contain object-bottom transition-all duration-300',
                       'filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.12)]',
                       isCurrent
                         ? 'drop-shadow-[0_8px_22px_rgba(245,158,11,0.5)] brightness-105'

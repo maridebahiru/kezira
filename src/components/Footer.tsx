@@ -3,7 +3,7 @@ import { Instagram, Youtube, Twitter, Music, Send, Check } from 'lucide-react';
 import { eventConfig } from '../config/event';
 import enkuuLogo from '../assets/enkuu.png';
 import logoImg from '../assets/logo.png';
-import mamshaLogo from '../assets/mamsha.png';
+import mamshaLogo from '../assets/enkuu.png';
 import abshirLogo from '../assets/abshir logo.png';
 
 interface FooterProps {

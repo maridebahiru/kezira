@@ -1,15 +1,14 @@
 import logoImg from '../assets/logo.png';
 import abshirLogo from '../assets/abshir logo.png';
 import enkuImg from '../assets/enku.jpg';
-import mamshaLogo from '../assets/mamsha.png';
+import mamshaLogo from '../assets/enkuu.png';
 import asset10666 from '../assets/10666 [Converted].jpg';
 import artboard2 from '../assets/Artboard 1 copy 2-100.jpg';
 import artboard3 from '../assets/Artboard 1 copy 3-100.jpg';
 import artboard4 from '../assets/Artboard 1 copy 4-100.jpg';
-import panfalonImg from '../assets/panfalon.png';
-import tedyImg from '../assets/tedy.png';
-import rophnanImg from '../assets/rophnan.png';
-import kasmaselImg from '../assets/kasmasel.png';
+import artistesImg from '../assets/artistes.png';
+import dj1Img from '../assets/dj1.png';
+import dj2Img from '../assets/dj2.png';
 import asterImg from '../assets/aster.png';
 import mamshaFestVideo from '../assets/MAMSHA FEST.mp4';
 import mamshaFest3Video from '../assets/MAMSHA FEST 3.mp4';
@@ -281,64 +280,40 @@ export const eventConfig: EventConfig = {
 
   artists: [
     {
-      id: "panfalon",
-      name: "PANFALON",
-      role: "ETHIO-ELECTRONIC LIVE",
+      id: "dj-kal",
+      name: "DJ KAL",
+      role: "ETHIO-ELECTRONIC DJ",
       category: "ethio-electronic",
-      image: panfalonImg,
-      bio: "Dynamic visionary bridging vibrant electronic textures with iconic East African rhythms.",
-      badge: "LIVE PERFORMER",
+      image: dj1Img,
+      bio: "Mastering deep Ethio-electronic rhythms and high-energy festival grooves.",
+      badge: "RESIDENT DJ",
       stage: "GRAND CINEMATIC ARENA",
-      time: "3:00 PM (9:00 LOCAL)",
-      genre: "AFRO-ELECTRONIC",
+      time: "4:00 PM (10:00 LOCAL)",
+      genre: "ETHIO-HOUSE",
     },
     {
-      id: "tedy",
-      name: "TEDDY AFRO",
-      role: "NATIONAL ICON",
+      id: "the-artists",
+      name: "THE ARTISTS",
+      role: "HEADLINERS LINEUP",
       category: "headliner",
-      image: tedyImg,
-      bio: "Ethiopia's most celebrated musical visionary delivering an emotional, once-in-a-lifetime sunset spectacle.",
-      badge: "LEGENDARY HEADLINER",
+      image: artistesImg,
+      bio: "Ethiopia's premier musical visionaries performing live together on the main cinematic stage.",
+      badge: "MAIN HEADLINERS",
       stage: "GRAND CINEMATIC ARENA",
-      time: "6:00 PM (12:00 LOCAL)",
-      genre: "ETHIOPIAN ANTHEMS",
+      time: "6:30 PM (12:30 LOCAL)",
+      genre: "ETHIOPIAN ANTHEMS & LIVE ELECTRONIC",
     },
     {
-      id: "rophnan",
-      name: "ROPHNAN",
-      role: "ETHIO-ELECTRONIC PIONEER",
-      category: "ethio-electronic",
-      image: rophnanImg,
-      bio: "Revolutionizing East African electronic soundscapes by bridging indigenous pentatonic scales with future basslines.",
-      badge: "FUTURIST PIONEER",
+      id: "dj-luna",
+      name: "DJ LUNA",
+      role: "GLOBAL DJ",
+      category: "global-dj",
+      image: dj2Img,
+      bio: "International electronic selector weaving futuristic synths and deep basslines.",
+      badge: "GLOBAL GUEST DJ",
       stage: "SKYLINE STAGE",
-      time: "4:30 PM (10:30 LOCAL)",
-      genre: "AFRO-EDM / FUTURE ETHIO",
-    },
-    {
-      id: "kasmasel",
-      name: "KASMASSE",
-      role: "ANCHIHOYE PIONEER",
-      category: "headliner",
-      image: kasmaselImg,
-      bio: "Pioneering the Anchihoye electronic wave and modern sonic storytelling across East Africa.",
-      badge: "MODERN ICON",
-      stage: "SUNSET PALMS ARENA",
-      time: "7:30 PM (1:30 NIGHT LOCAL)",
-      genre: "ANCHIHOYE / CONTEMPORARY",
-    },
-    {
-      id: "aster",
-      name: "ASTER AWEKE",
-      role: "QUEEN OF ETHIOPIAN SOUL",
-      category: "headliner",
-      image: asterImg,
-      bio: "The legendary, inimitable Queen of Ethiopian music performing timeless soul anthems under the Dire Dawa sky.",
-      badge: "SOUL QUEEN",
-      stage: "ROYAL PAVILION",
-      time: "9:00 PM (3:00 NIGHT LOCAL)",
-      genre: "ETHIO-SOUL / JAZZ",
+      time: "8:30 PM (2:30 NIGHT LOCAL)",
+      genre: "AFRO-TECH / FUTURE BASS",
     },
   ],
 
