@@ -1,5 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Download, ShieldCheck, QrCode, Sparkles } from 'lucide-react';
+import QRCode from 'qrcode';
+import jsQR from 'jsqr';
 import { OrderRecord } from '../services/ticketService';
 import logoImg from '../assets/logo.png';
 import abshirLogo from '../assets/abshir logo.png';
@@ -10,19 +12,79 @@ interface TicketPassCardProps {
   order: OrderRecord;
 }
 
+/**
+ * Generates an isolated, standard-compliant QR Code Canvas using `qrcode` with Error Correction Level 'H'.
+ * Validates the output immediately using `jsQR` decoder self-check.
+ */
+const generatePureQRCanvas = async (dataText: string, size = 300): Promise<HTMLCanvasElement> => {
+  const qrCanvas = document.createElement('canvas');
+  qrCanvas.width = size;
+  qrCanvas.height = size;
+
+  // 1. Generate standard QR code payload using `qrcode` encoder (Level H, 4-module quiet zone)
+  await QRCode.toCanvas(qrCanvas, dataText, {
+    errorCorrectionLevel: 'H',
+    margin: 4, // 4-module quiet zone (white margin) as specified by ISO/IEC 18004
+    width: size,
+    color: {
+      dark: '#000000',
+      light: '#FFFFFF',
+    },
+  });
+
+  // 2. Decode self-check immediately using `jsQR` engine
+  const ctx = qrCanvas.getContext('2d');
+  if (!ctx) {
+    throw new Error('Failed to get 2d context for QR canvas');
+  }
+
+  const imgData = ctx.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+  const decoded = jsQR(imgData.data, imgData.width, imgData.height);
+
+  if (!decoded || decoded.data !== dataText) {
+    const errorMsg = `[QR Self-Check Failure] Generated QR code for payload "${dataText}" failed decoding check! Got: "${decoded?.data ?? 'null'}"`;
+    console.error(errorMsg);
+    throw new Error(errorMsg);
+  }
+
+  console.log(`[QR Self-Check Success] Decoded payload successfully via jsQR: "${decoded.data}" [Level H]`);
+  return qrCanvas;
+};
+
 export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const qrCanvasRef = useRef<HTMLCanvasElement>(null);
 
   // Generate a unique cryptographic security signature hash for anti-fraud
   const securityHash = `KZ-SEC-2026-${order.id.replace('KZ-2026-', '')}-${(
     (parseInt(order.id.replace(/\D/g, '') || '1000') * 7) % 90000 + 10000
   ).toString(16).toUpperCase()}`;
 
-  const handleDownloadPass = () => {
-    const cardElement = cardRef.current;
-    if (!cardElement) return;
+  // Render on-screen QR canvas using standard qrcode engine with jsQR self-check
+  useEffect(() => {
+    let active = true;
+    const canvas = qrCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    // Create an HTML5 Canvas to render high-resolution PNG pass
+    generatePureQRCanvas(order.id, 160)
+      .then((pureQR) => {
+        if (!active) return;
+        canvas.width = 160;
+        canvas.height = 160;
+        ctx.drawImage(pureQR, 0, 0);
+      })
+      .catch((err) => {
+        console.error('[Preview QR Error]', err);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [order.id]);
+
+  const handleDownloadPass = async () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -79,8 +141,8 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
     enku.crossOrigin = 'anonymous';
     enku.src = enkuImg;
 
-    // Function to render text details once images are loaded/rendered
-    const drawDetails = () => {
+    // Function to render text details and full QR code
+    const drawDetails = async () => {
       // Partner Logos Header Row
       ctx.fillStyle = '#FAF8F5';
       ctx.fillRect(50, 170, width - 100, 80);
@@ -90,9 +152,7 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
         ctx.drawImage(mamsha, 250, 185, 100, 50);
         ctx.drawImage(abshir, 420, 185, 100, 50);
         ctx.drawImage(enku, 590, 185, 100, 50);
-      } catch {
-        // Fallback if images crossOrigin security limits canvas export
-      }
+      } catch {}
 
       // Divider Line
       ctx.strokeStyle = '#E2E8F0';
@@ -150,39 +210,22 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
       ctx.font = 'bold 20px sans-serif';
       ctx.fillText('MIDER BABUR, DIRE DAWA', 450, 530);
 
-      // Security QR Code Box
+      // Security QR Code Box Background & Border (drawn FIRST)
       ctx.fillStyle = '#FFFFFF';
       ctx.strokeStyle = '#D97706';
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 4;
       ctx.fillRect(60, 570, width - 120, 360);
       ctx.strokeRect(60, 570, width - 120, 360);
 
-      // QR Code Simulation Grid & Anti-Fraud Pattern
-      ctx.fillStyle = '#0F172A';
-      const qrX = 100;
-      const qrY = 600;
-      const qrSize = 300;
-
-      // Draw QR border & finder patterns
-      ctx.fillRect(qrX, qrY, qrSize, qrSize);
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(qrX + 15, qrY + 15, qrSize - 30, qrSize - 30);
-      
-      ctx.fillStyle = '#0F172A';
-      // QR Finder Squares
-      ctx.fillRect(qrX + 30, qrY + 30, 70, 70);
-      ctx.fillRect(qrX + qrSize - 100, qrY + 30, 70, 70);
-      ctx.fillRect(qrX + 30, qrY + qrSize - 100, 70, 70);
-
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(qrX + 45, qrY + 45, 40, 40);
-      ctx.fillRect(qrX + qrSize - 85, qrY + 45, 40, 40);
-      ctx.fillRect(qrX + 45, qrY + qrSize - 85, 40, 40);
-
-      ctx.fillStyle = '#D97706';
-      ctx.fillRect(qrX + 55, qrY + 55, 20, 20);
-      ctx.fillRect(qrX + qrSize - 75, qrY + 55, 20, 20);
-      ctx.fillRect(qrX + 55, qrY + qrSize - 75, 20, 20);
+      // TOP-LAYER CALL: Draw isolated pure black/white QR canvas AFTER all background fills & theming
+      try {
+        const pureQRCanvas = await generatePureQRCanvas(order.id, 300);
+        ctx.drawImage(pureQRCanvas, 90, 600, 300, 300);
+      } catch (err) {
+        console.error('[Download Pass Failure] QR Code generation/validation error:', err);
+        alert('Could not download pass: QR code failed self-check validation.');
+        return;
+      }
 
       // Security Details Right of QR
       ctx.textAlign = 'left';
@@ -218,14 +261,14 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
       ctx.font = '12px monospace';
       ctx.fillText('VALID FOR SINGLE ENTRY ON OCTOBER 3, 2026 AT MIDER BABUR, DIRE DAWA', width / 2, 1020);
 
-      // Export & Download
+      // Export & Download PNG
       const link = document.createElement('a');
       link.download = `KEZIRA_PASS_${order.id}_${order.customerName.replace(/\s+/g, '_')}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     };
 
-    // Trigger rendering once images load
+    // Trigger rendering once images load (or on 150ms timeout)
     let loadedCount = 0;
     const checkAllLoaded = () => {
       loadedCount++;
@@ -237,10 +280,9 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
     abshir.onload = checkAllLoaded;
     enku.onload = checkAllLoaded;
 
-    // Timeout fallback if images fail to load cross-origin
     setTimeout(() => {
       if (loadedCount < 4) drawDetails();
-    }, 300);
+    }, 150);
   };
 
   return (
@@ -258,25 +300,19 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
             <div className="flex items-center gap-2">
               <img src={mamshaLogo} alt="Mamsha" className="h-6 w-auto object-contain" />
               <img src={abshirLogo} alt="Abshir" className="h-6 w-auto object-contain" />
-              <img src={enkuImg} alt="Enku" className="h-6 h-6 object-cover rounded-full border border-amber-500/40" />
+              <img src={enkuImg} alt="Enku" className="h-6 w-auto object-contain rounded-md" />
             </div>
           </div>
-
-          <div className="text-right">
-            <span className="text-3xs font-mono text-slate-500 uppercase block font-bold">
-              SECURITY HASH
-            </span>
-            <span className="text-2xs font-mono text-amber-800 font-extrabold tracking-wider">
-              {securityHash}
-            </span>
+          <div className="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/40 text-3xs font-mono font-bold text-amber-900 uppercase">
+            OFFICIAL FESTIVAL PASS
           </div>
         </div>
 
-        {/* Customer & Ticket Details */}
+        {/* Pass Holder & Order Meta */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          <div>
-            <span className="text-3xs font-mono text-slate-500 uppercase block font-bold">
-              PASS HOLDER NAME
+          <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200">
+            <span className="text-3xs font-mono text-slate-500 uppercase font-bold block">
+              PASS HOLDER
             </span>
             <span className="text-lg sm:text-xl font-serif text-slate-900 font-bold block">
               {order.customerName}
@@ -284,7 +320,7 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
             <span className="text-xs font-mono text-slate-600">{order.phone}</span>
           </div>
 
-          <div className="p-3 rounded-2xl bg-amber-500/15 border border-amber-400/40">
+          <div className="p-4 rounded-2xl bg-amber-500/15 border border-amber-400/40">
             <span className="text-3xs font-mono text-amber-900 uppercase font-bold block">
               TIER & ORDER ID
             </span>
@@ -302,7 +338,7 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
           <div>
             <span className="text-3xs text-slate-500 uppercase block font-bold">DATE & TIME</span>
             <span className="font-bold text-slate-900 block">OCTOBER 3, 2026</span>
-            <span className="text-3xs text-slate-600">9:00 AM – 9:00 PM (3:00 – 9:00 Local)</span>
+            <span className="text-3xs text-slate-600">9:00 AM – 9:00 PM</span>
           </div>
           <div>
             <span className="text-3xs text-slate-500 uppercase block font-bold">VENUE LOCATION</span>
@@ -314,8 +350,8 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
         {/* Anti-Tamper QR Verification Section */}
         <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-400/50 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-white border border-amber-500/40 shadow-md text-amber-800 shrink-0">
-              <QrCode className="w-14 h-14" />
+            <div className="p-2 rounded-2xl bg-white border border-amber-500/40 shadow-md shrink-0">
+              <canvas ref={qrCanvasRef} className="w-24 h-24 rounded-xl" />
             </div>
             <div>
               <span className="text-3xs font-mono font-bold text-emerald-800 uppercase flex items-center gap-1">
