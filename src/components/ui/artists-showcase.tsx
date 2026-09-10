@@ -7,6 +7,8 @@ export interface Artist {
   name: string;
   imageSrc: string;
   imageAlt?: string;
+  role?: string;
+  badge?: string;
 }
 
 export interface ArtistsShowcaseProps {
@@ -26,10 +28,13 @@ export const ArtistsShowcase = ({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const activeIndex = hoveredIndex !== null ? hoveredIndex : selectedIndex;
+  const activeArtist = activeIndex !== null ? artists[activeIndex] : null;
 
   const handleArtistClick = (index: number) => {
     setSelectedIndex((prev) => (prev === index ? null : index));
   };
+
+  const midIndex = Math.floor(artists.length / 2);
 
   return (
     <section
@@ -40,24 +45,29 @@ export const ArtistsShowcase = ({
     >
       <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center">
         {/* Stage: Shared circle spotlight behind the artists */}
-        <div className="relative flex w-full items-end justify-center h-[210px] sm:h-[320px] md:h-[400px] lg:h-[480px]">
+        <div className="relative flex w-full items-end justify-center h-[215px] sm:h-[330px] md:h-[430px] lg:h-[500px]">
           {/* Luminous shared circle spotlight */}
           <motion.div
             initial={{ scale: 0.75, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute bottom-0 z-0 h-[190px] w-[190px] sm:h-[290px] sm:w-[290px] md:h-[380px] md:w-[380px] lg:h-[460px] lg:w-[460px] rounded-full bg-gradient-to-t from-amber-400 via-yellow-400 to-yellow-300 shadow-[0_0_50px_rgba(251,191,36,0.35)] sm:shadow-[0_0_90px_rgba(251,191,36,0.4)] pointer-events-none"
+            className="absolute bottom-0 z-0 h-[200px] w-[230px] sm:h-[320px] sm:w-[370px] md:h-[415px] md:w-[490px] lg:h-[485px] lg:w-[600px] rounded-full bg-gradient-to-t from-amber-400 via-yellow-400 to-yellow-300 shadow-[0_0_55px_rgba(251,191,36,0.35)] sm:shadow-[0_0_95px_rgba(251,191,36,0.45)] pointer-events-none"
           >
             {/* Soft ambient aura pulse */}
             <div className="absolute inset-0 rounded-full bg-yellow-400/30 blur-2xl -z-10 animate-pulse pointer-events-none" />
           </motion.div>
 
           {/* Row of artists standing in front of the spotlight */}
-          <div className="relative z-10 flex items-end justify-center w-full max-w-full gap-3 sm:gap-6 md:gap-10 px-2 sm:px-6">
+          <div className="relative z-10 flex items-end justify-center w-full max-w-full -space-x-2 sm:-space-x-4 md:-space-x-6 lg:-space-x-8 px-1 sm:px-6">
             {artists.map((artist, index) => {
               const isCurrent = activeIndex === index;
-              const isMiddle = index === Math.floor(artists.length / 2);
+              const isMiddle = index === midIndex;
+              const distFromCenter = Math.abs(index - midIndex);
+
+              // Symmetrical depth hierarchy: Center in front (30), Inner flanking (20), Outer flanking (10). Hovered = 50.
+              const naturalZIndex = isMiddle ? 30 : distFromCenter === 1 ? 20 : 10;
+              const itemZIndex = isCurrent ? 50 : naturalZIndex;
 
               return crop === 'circular' ? (
                 <motion.div
@@ -72,7 +82,7 @@ export const ArtistsShowcase = ({
                   }}
                   whileHover={{ y: -6, scale: 1.08 }}
                   whileTap={{ y: -2, scale: 1.04 }}
-                  style={{ zIndex: isCurrent ? 30 : isMiddle ? 20 : index + 1 }}
+                  style={{ zIndex: itemZIndex }}
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                   onClick={() => handleArtistClick(index)}
@@ -119,7 +129,7 @@ export const ArtistsShowcase = ({
                     scale: 1.03,
                     transition: { duration: 0.15, ease: 'easeOut' },
                   }}
-                  style={{ zIndex: isCurrent ? 30 : isMiddle ? 20 : index + 1 }}
+                  style={{ zIndex: itemZIndex }}
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                   onClick={() => handleArtistClick(index)}
@@ -130,12 +140,14 @@ export const ArtistsShowcase = ({
                     alt={artist.imageAlt || `Portrait of ${artist.name}`}
                     className={cn(
                       isMiddle
-                        ? 'h-[185px] sm:h-[295px] md:h-[385px] lg:h-[455px] max-w-[34vw] sm:max-w-[240px] md:max-w-[310px] lg:max-w-[380px]'
-                        : 'h-[150px] sm:h-[240px] md:h-[320px] lg:h-[380px] max-w-[26vw] sm:max-w-[180px] md:max-w-[240px] lg:max-w-[290px]',
+                        ? 'h-[185px] sm:h-[300px] md:h-[400px] lg:h-[470px] max-w-[32vw] sm:max-w-[240px] md:max-w-[320px] lg:max-w-[380px]'
+                        : distFromCenter === 1
+                        ? 'h-[155px] sm:h-[255px] md:h-[340px] lg:h-[400px] max-w-[21vw] sm:max-w-[160px] md:max-w-[215px] lg:max-w-[250px]'
+                        : 'h-[135px] sm:h-[225px] md:h-[300px] lg:h-[350px] max-w-[18vw] sm:max-w-[140px] md:max-w-[185px] lg:max-w-[220px]',
                       'w-auto object-contain object-bottom transition-all duration-300',
                       'filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.12)]',
                       isCurrent
-                        ? 'drop-shadow-[0_8px_22px_rgba(245,158,11,0.5)] brightness-105'
+                        ? 'drop-shadow-[0_8px_24px_rgba(245,158,11,0.55)] brightness-105 scale-105'
                         : 'group-hover:drop-shadow-[0_6px_16px_rgba(245,158,11,0.35)]'
                     )}
                     onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -174,6 +186,22 @@ export const ArtistsShowcase = ({
             );
           })}
         </div>
+
+        {/* Active Artist Role / Badge Pill */}
+        {activeArtist && (activeArtist.role || activeArtist.badge) && (
+          <motion.div
+            key={activeArtist.name}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mt-3 flex items-center justify-center"
+          >
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-3xs sm:text-2xs font-mono font-bold tracking-widest text-amber-900 uppercase">
+              {activeArtist.badge && <span className="text-amber-600">✦</span>}
+              {activeArtist.role || activeArtist.badge}
+            </span>
+          </motion.div>
+        )}
       </div>
     </section>
   );

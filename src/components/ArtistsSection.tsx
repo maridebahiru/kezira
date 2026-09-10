@@ -3,11 +3,13 @@ import { eventConfig } from '../config/event';
 import { ArtistsShowcase, Artist } from './ui/artists-showcase';
 
 export const ArtistsSection: React.FC = () => {
-  // 3 premier acts: DJ KAL (Left), THE ARTISTS (Middle), DJ LUNA (Right)
+  // 5 premier acts: 2 DJs (Left), THE ARTISTS (Middle), 2 DJs (Right)
   const artists: Artist[] = eventConfig.artists.map((a) => ({
     name: a.name,
     imageSrc: a.image,
     imageAlt: `Portrait of ${a.name}`,
+    role: a.role,
+    badge: a.badge,
   }));
 
   return (

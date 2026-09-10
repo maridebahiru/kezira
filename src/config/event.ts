@@ -7,8 +7,10 @@ import artboard2 from '../assets/Artboard 1 copy 2-100.jpg';
 import artboard3 from '../assets/Artboard 1 copy 3-100.jpg';
 import artboard4 from '../assets/Artboard 1 copy 4-100.jpg';
 import artistesImg from '../assets/artistes.png';
-import dj1Img from '../assets/dj1.png';
-import dj2Img from '../assets/dj2.png';
+import djLeft1Img from '../assets/dj-left-1.png';
+import djLeft2Img from '../assets/dj-left-2.png';
+import djRight1Img from '../assets/dj-right-1.png';
+import djRight2Img from '../assets/dj-right-2.png';
 import asterImg from '../assets/aster.png';
 import mamshaFestVideo from '../assets/MAMSHA FEST.mp4';
 import mamshaFest3Video from '../assets/MAMSHA FEST 3.mp4';
@@ -280,16 +282,28 @@ export const eventConfig: EventConfig = {
 
   artists: [
     {
-      id: "dj-kal",
+      id: "dj-left-1",
       name: "DJ KAL",
       role: "ETHIO-ELECTRONIC DJ",
       category: "ethio-electronic",
-      image: dj1Img,
-      bio: "Mastering deep Ethio-electronic rhythms and high-energy festival grooves.",
+      image: djLeft1Img,
+      bio: "Mastering deep Ethio-electronic rhythms, high-energy festival grooves, and hypnotic beats.",
       badge: "RESIDENT DJ",
       stage: "GRAND CINEMATIC ARENA",
-      time: "4:00 PM (10:00 LOCAL)",
+      time: "3:00 PM (9:00 LOCAL)",
       genre: "ETHIO-HOUSE",
+    },
+    {
+      id: "dj-left-2",
+      name: "DJ NATI",
+      role: "AFRO-HOUSE DJ",
+      category: "ethio-electronic",
+      image: djLeft2Img,
+      bio: "Crafting hypnotic afro-electronic rhythms, deep basslines, and uplifting festival energy.",
+      badge: "RESIDENT DJ",
+      stage: "GRAND CINEMATIC ARENA",
+      time: "4:30 PM (10:30 LOCAL)",
+      genre: "AFRO-TECH",
     },
     {
       id: "the-artists",
@@ -304,16 +318,28 @@ export const eventConfig: EventConfig = {
       genre: "ETHIOPIAN ANTHEMS & LIVE ELECTRONIC",
     },
     {
-      id: "dj-luna",
+      id: "dj-right-1",
       name: "DJ LUNA",
       role: "GLOBAL DJ",
       category: "global-dj",
-      image: dj2Img,
+      image: djRight1Img,
       bio: "International electronic selector weaving futuristic synths and deep basslines.",
       badge: "GLOBAL GUEST DJ",
       stage: "SKYLINE STAGE",
-      time: "8:30 PM (2:30 NIGHT LOCAL)",
+      time: "8:00 PM (2:00 NIGHT LOCAL)",
       genre: "AFRO-TECH / FUTURE BASS",
+    },
+    {
+      id: "dj-right-2",
+      name: "DJ BROOK",
+      role: "URBAN & ELECTRONIC DJ",
+      category: "global-dj",
+      image: djRight2Img,
+      bio: "Explosive party vibes blending modern urban rhythms, afro-beats, and electronic bass drops.",
+      badge: "SPECIAL GUEST DJ",
+      stage: "SKYLINE STAGE",
+      time: "9:00 PM (3:00 NIGHT LOCAL)",
+      genre: "URBAN AFRO-BASS",
     },
   ],
 
