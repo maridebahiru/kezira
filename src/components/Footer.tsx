@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import { Instagram, Youtube, Twitter, Music, Send, Check } from 'lucide-react';
 import { eventConfig } from '../config/event';
 import enkuuLogo from '../assets/enkuu.png';
-import logoImg from '../assets/logo.png';
-import mamshaLogo from '../assets/enkuu.png';
-import abshirLogo from '../assets/abshir logo.png';
 
 interface FooterProps {
   onOpenAdmin?: () => void;
@@ -60,8 +57,8 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
                 <span className="text-sm font-mono font-bold text-amber-800 tracking-widest uppercase">
                   ENQU EVENT
                 </span>
-                <span className="text-2xs font-mono text-slate-500 uppercase tracking-wider">
-                  MAIN EVENT PRESENTER
+                <span className="text-2xs font-mono text-slate-500 uppercase tracking-wider font-semibold">
+                  MAIN EVENT ORGANIZER
                 </span>
               </div>
             </a>
@@ -119,7 +116,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
         {/* Bottom Socials & Copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-3xs font-mono tracking-widest text-slate-500">
           <div>
-            © 2026 KEZIRA MEDIA. ALL RIGHTS RESERVED.
+            © 2026 ENQU EVENT & KEZIRA. ALL RIGHTS RESERVED.
           </div>
 
           {/* Social Icons */}

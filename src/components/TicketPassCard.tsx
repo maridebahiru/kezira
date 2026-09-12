@@ -5,8 +5,7 @@ import jsQR from 'jsqr';
 import { OrderRecord } from '../services/ticketService';
 import logoImg from '../assets/logo.png';
 import abshirLogo from '../assets/abshir logo.png';
-import enkuImg from '../assets/enku.jpg';
-import mamshaLogo from '../assets/enkuu.png';
+import enkuuLogo from '../assets/enkuu.png';
 
 interface TicketPassCardProps {
   order: OrderRecord;
@@ -119,27 +118,23 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
     ctx.fillStyle = '#F59E0B';
     ctx.font = 'bold 24px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('KEZIRA MEDIA • OFFICIAL DIGITAL FESTIVAL PASS', width / 2, 85);
+    ctx.fillText('ENQU EVENT PRESENTS KEZIRA • OFFICIAL FESTIVAL PASS', width / 2, 85);
     ctx.fillStyle = '#94A3B8';
     ctx.font = '16px monospace';
     ctx.fillText('SATURDAY, OCTOBER 3, 2026 • MIDER BABUR, DIRE DAWA', width / 2, 115);
 
-    // Draw Main Logos
+    // Draw Main Organizer Logo (ENQU EVENT)
     const mainLogo = new Image();
     mainLogo.crossOrigin = 'anonymous';
-    mainLogo.src = logoImg;
+    mainLogo.src = enkuuLogo;
 
-    const mamsha = new Image();
-    mamsha.crossOrigin = 'anonymous';
-    mamsha.src = mamshaLogo;
+    const mediaHubLogo = new Image();
+    mediaHubLogo.crossOrigin = 'anonymous';
+    mediaHubLogo.src = logoImg;
 
     const abshir = new Image();
     abshir.crossOrigin = 'anonymous';
     abshir.src = abshirLogo;
-
-    const enku = new Image();
-    enku.crossOrigin = 'anonymous';
-    enku.src = enkuImg;
 
     // Function to render text details and full QR code
     const drawDetails = async () => {
@@ -148,9 +143,9 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
       ctx.fillRect(50, 170, width - 100, 80);
 
       try {
-        ctx.drawImage(mainLogo, 70, 175, 120, 70);
-        ctx.drawImage(mamsha, 250, 185, 100, 50);
-        ctx.drawImage(abshir, 420, 185, 100, 50);
+        ctx.drawImage(mainLogo, 70, 175, 130, 70);
+        ctx.drawImage(mediaHubLogo, 260, 185, 100, 50);
+        ctx.drawImage(abshir, 410, 185, 100, 50);
       } catch (logoErr) {
         console.warn('Partner logo canvas draw warning:', logoErr);
       }
@@ -273,16 +268,15 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
     let loadedCount = 0;
     const checkAllLoaded = () => {
       loadedCount++;
-      if (loadedCount >= 4) drawDetails();
+      if (loadedCount >= 3) drawDetails();
     };
 
     mainLogo.onload = checkAllLoaded;
-    mamsha.onload = checkAllLoaded;
+    mediaHubLogo.onload = checkAllLoaded;
     abshir.onload = checkAllLoaded;
-    enku.onload = checkAllLoaded;
 
     setTimeout(() => {
-      if (loadedCount < 4) drawDetails();
+      if (loadedCount < 3) drawDetails();
     }, 150);
   };
 
@@ -293,15 +287,20 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
         ref={cardRef}
         className="relative rounded-3xl bg-white border-2 border-amber-500/60 p-6 sm:p-8 text-left shadow-2xl overflow-hidden text-slate-900"
       >
-        {/* Top Partner Logos Bar */}
+        {/* Top Organizer & Partner Logos Bar */}
         <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-2 flex-wrap">
           <div className="flex items-center gap-3">
-            <img src={logoImg} alt="KEZIRA Logo" className="h-10 sm:h-12 w-auto object-contain" />
+            <div className="flex items-center gap-2.5">
+              <img src={enkuuLogo} alt="ENQU EVENT - Main Organizer" className="h-10 sm:h-12 w-auto object-contain" />
+              <div className="flex flex-col">
+                <span className="text-[11px] font-mono font-bold text-amber-900 tracking-wider">ENQU EVENT</span>
+                <span className="text-[8px] font-mono text-slate-500 uppercase font-bold tracking-tight">MAIN ORGANIZER</span>
+              </div>
+            </div>
             <div className="h-6 w-px bg-slate-300" />
-            <div className="flex items-center gap-2">
-              <img src={mamshaLogo} alt="Mamsha" className="h-6 w-auto object-contain" />
-              <img src={abshirLogo} alt="Abshir" className="h-6 w-auto object-contain" />
-              <img src={enkuImg} alt="Enku" className="h-6 w-auto object-contain rounded-md" />
+            <div className="flex items-center gap-2.5">
+              <img src={logoImg} alt="Kezira Media Hub" className="h-6 w-auto object-contain opacity-80" />
+              <img src={abshirLogo} alt="Abshir" className="h-6 w-auto object-contain opacity-80" />
             </div>
           </div>
           <div className="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/40 text-3xs font-mono font-bold text-amber-900 uppercase">

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, MapPin, Calendar } from 'lucide-react';
 import { HeroVideoConfig } from '../config/event';
+import enkuuLogo from '../assets/enkuu.png';
 
 interface HeroContentProps {
   currentVideo: HeroVideoConfig;
@@ -43,11 +44,12 @@ export const HeroContent: React.FC<HeroContentProps> = ({
         initial={{ opacity: 0, y: -15, filter: 'blur(6px)' }}
         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
         transition={{ duration: 0.8, delay: 0.2 }}
-        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-amber-500/30 backdrop-blur-md mb-4 sm:mb-6"
+        className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 border border-amber-500/40 backdrop-blur-md mb-4 sm:mb-6 shadow-md"
       >
-        <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400 animate-pulse" />
+        <img src={enkuuLogo} alt="ENQU EVENT Logo" className="h-5 sm:h-6 w-auto object-contain" />
+        <div className="h-3 w-px bg-amber-400/50" />
         <span className="text-[10px] sm:text-2xs font-mono tracking-[0.18em] sm:tracking-[0.25em] text-amber-300 uppercase font-bold">
-          ENQU EVENT PRESENTS — {eventName} {eventEdition}
+          MAIN ORGANIZER: ENQU EVENT PRESENTS — {eventName} {eventEdition}
         </span>
       </motion.div>
 

@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { eventConfig, TicketTier } from '../config/event';
 import { ticketService, OrderRecord } from '../services/ticketService';
-import logoImg from '../assets/logo.png';
+import enkuuLogo from '../assets/enkuu.png';
 import { TicketPassCard } from './TicketPassCard';
 
 interface TicketModalProps {
@@ -187,11 +187,11 @@ export const TicketModal: React.FC<TicketModalProps> = ({
               {step === 'configure' && (
                 <div>
                   <div className="flex items-center gap-3 mb-3">
-                    <img src={logoImg} alt="KEZIRA Logo" className="h-8 w-auto object-contain filter drop-shadow-sm" />
+                    <img src={enkuuLogo} alt="ENQU EVENT Logo" className="h-9 w-auto object-contain filter drop-shadow-sm" />
                     <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/40">
                       <Sparkles className="w-3.5 h-3.5 text-amber-700" />
                       <span className="text-3xs font-mono tracking-widest text-amber-900 font-bold uppercase">
-                        RESERVE FESTIVAL PASS
+                        ENQU EVENT • RESERVE FESTIVAL PASS
                       </span>
                     </div>
                   </div>
@@ -470,11 +470,11 @@ export const TicketModal: React.FC<TicketModalProps> = ({
           {activeTab === 'lookup' && (
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <img src={logoImg} alt="KEZIRA Logo" className="h-8 w-auto object-contain filter drop-shadow-sm" />
+                <img src={enkuuLogo} alt="ENQU EVENT Logo" className="h-9 w-auto object-contain filter drop-shadow-sm" />
                 <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/40">
                   <QrCode className="w-3.5 h-3.5 text-amber-700" />
                   <span className="text-3xs font-mono tracking-widest text-amber-900 font-bold uppercase">
-                    TICKET PASS LOOKUP
+                    ENQU EVENT • PASS LOOKUP
                   </span>
                 </div>
               </div>

@@ -424,6 +424,7 @@ export const ticketService = {
 
       throw new Error('Transaction returned empty state');
     } catch (err: any) {
+      console.warn('⚠️ [Firestore check-in failed, falling back to local database]:', err);
       // Fallback to local storage atomic evaluation if offline or permission fails
       const local = ticketService.findOrder(cleanId);
       if (!local) {
@@ -480,7 +481,7 @@ export const ticketService = {
   },
 };
 
-export type ScanTicketResultType = 'pass' | 'already_used' | 'invalid';
+export type ScanTicketResultType = 'pass' | 'already_used' | 'not_approved' | 'invalid';
 
 export interface ScanTicketResponse {
   result: ScanTicketResultType;
@@ -494,8 +495,10 @@ export interface ScanTicketResponse {
  * Connects scanner UI to backend verification & check-in pipeline.
  */
 export const scanTicket = async (ticketId: string, _staffUid?: string): Promise<ScanTicketResponse> => {
+  console.log(`🔍 [scanTicket] Checking ticket: "${ticketId}"`);
   const checkInRes = await ticketService.scanAndCheckInTicket(ticketId);
   if (checkInRes.result === 'ENTRY_GRANTED') {
+    console.log('✅ [scanTicket] Entry granted:', checkInRes.message);
     return {
       result: 'pass',
       order: checkInRes.order,
@@ -503,17 +506,26 @@ export const scanTicket = async (ticketId: string, _staffUid?: string): Promise<
       message: checkInRes.message,
     };
   } else if (checkInRes.result === 'ALREADY_USED') {
+    console.error('⛔ [scanTicket] Already used:', checkInRes.message);
     return {
       result: 'already_used',
       order: checkInRes.order,
       scannedAt: checkInRes.scannedAt,
       message: checkInRes.message,
     };
+  } else if (checkInRes.result === 'NOT_APPROVED') {
+    console.warn('⚠️ [scanTicket] Not approved yet:', checkInRes.message);
+    return {
+      result: 'not_approved',
+      order: checkInRes.order,
+      message: checkInRes.message,
+    };
   } else {
+    console.error('❌ [scanTicket] Invalid / Not found:', checkInRes.message);
     return {
       result: 'invalid',
       order: checkInRes.order,
-      message: checkInRes.message || `No valid ticket record matching "${ticketId}".`,
+      message: checkInRes.message || `No order record found matching "${ticketId}".`,
     };
   }
 };

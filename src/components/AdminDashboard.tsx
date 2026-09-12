@@ -19,7 +19,6 @@ import {
   QrCode,
   Calendar,
   Camera,
-  Volume2,
   ShieldCheck,
   AlertOctagon,
   RotateCcw,
@@ -34,43 +33,12 @@ import {
 import { auth } from '../config/firebase';
 import { eventConfig, ScheduleItem } from '../config/event';
 import { ticketService, OrderRecord, scanTicket, ScanTicketResponse } from '../services/ticketService';
-import logoImg from '../assets/logo.png';
+import enkuuLogo from '../assets/enkuu.png';
 
 interface AdminDashboardProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-const playAudioFeedback = (type: 'PASS' | 'FAIL') => {
-  try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    if (type === 'PASS') {
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1760, ctx.currentTime + 0.15);
-      gain.gain.setValueAtTime(0.3, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.3);
-    } else {
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(220, ctx.currentTime);
-      osc.frequency.setValueAtTime(110, ctx.currentTime + 0.15);
-      gain.gain.setValueAtTime(0.4, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-      osc.start(ctx.currentTime);
-    }
-  } catch (audioErr) {
-    console.warn('AudioContext playback warning:', audioErr);
-  }
-};
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -94,6 +62,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
   const scanInputRef = useRef<HTMLInputElement>(null);
   const autoResetTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isProcessingScanRef = useRef<boolean>(false);
+  const resultCardRef = useRef<HTMLDivElement>(null);
 
   // New Schedule Item State
   const [showAddScheduleModal, setShowAddScheduleModal] = useState<boolean>(false);
@@ -165,7 +134,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
           }
         })
         .catch((err) => {
-          console.warn('Camera stream error:', err);
+          console.error('📷 [Camera Stream Error]:', err);
         });
     }
 
@@ -184,6 +153,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
     }
   }, [activeTab, scanResult, scanError]);
 
+  // Auto-scroll to result card whenever scanResult is displayed
+  useEffect(() => {
+    if (scanResult && !scanLoading && resultCardRef.current) {
+      resultCardRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [scanResult, scanLoading]);
+
   if (!isOpen) return null;
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -196,6 +172,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
       try {
         await createUserWithEmailAndPassword(auth, email, password);
       } catch (createErr: any) {
+        console.error('🔐 [Admin Auth Error]:', createErr || err);
         setAuthError('Authentication failed. Check your email & password.');
       }
     } finally {
@@ -245,15 +222,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
     const staffUid = auth.currentUser?.uid || 'staff-admin-01';
 
     try {
-      // Rule 1: Pass decoded ticketId and staffUid to scanTicket function
-      const res = await scanTicket(targetInput, staffUid);
+      // Rule 1: Pass decoded ticketId and staffUid to scanTicket function with 8s timeout
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(
+          () =>
+            reject(
+              new Error(
+                'Request timed out — check your internet connection or browser shield/ad-blocker settings.'
+              )
+            ),
+          8000
+        )
+      );
+
+      const res = await Promise.race([scanTicket(targetInput, staffUid), timeoutPromise]);
       setScanResult(res);
 
-      // Play chime/buzzer audio feedback based on result
       if (res.result === 'pass') {
-        playAudioFeedback('PASS');
+        console.log('✅ [Gate Scanner] PASS - Entry granted for:', res.order?.customerName);
       } else {
-        playAudioFeedback('FAIL');
+        console.error(`🚨 [Gate Scanner] ${res.result.toUpperCase()}:`, res.message || res);
       }
 
       // Rule 4: Auto-reset back to active scanning after 2.5 seconds
@@ -268,12 +256,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
       }, 2500);
     } catch (err: any) {
       // Rule 5: Handle network/auth failures distinctly from invalid tickets
-      console.error('[scanTicket Network/Auth Exception]', err);
+      console.error('❌ [Gate Scanner Exception / Network Error]:', err);
       const networkErrMsg =
         err?.message ||
         'NETWORK / AUTH EXCEPTION: Could not communicate with gate validation server. Please verify network and retry.';
       setScanError(networkErrMsg);
-      playAudioFeedback('FAIL');
 
       autoResetTimerRef.current = setTimeout(() => {
         setScanError(null);
@@ -377,11 +364,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
         >
           <div className="p-6 sm:p-8 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src={logoImg} alt="KEZIRA Logo" className="h-9 w-auto object-contain" />
+              <img src={enkuuLogo} alt="ENQU EVENT Logo" className="h-10 w-auto object-contain" />
               <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 <span className="text-3xs font-mono tracking-widest text-amber-300 font-bold uppercase">
-                  KEZIRA MEDIA ADMIN PORTAL
+                  ENQU EVENT • MAIN ORGANIZER ADMIN PORTAL
                 </span>
               </div>
             </div>
@@ -405,8 +392,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
 
           {!isAuthenticated ? (
             <div className="p-8 sm:p-12 flex flex-col items-center justify-center text-center my-auto">
-              <div className="p-4 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 mb-6">
-                <Lock className="w-8 h-8" />
+              <img src={enkuuLogo} alt="ENQU EVENT Logo" className="h-14 w-auto object-contain mb-4 filter drop-shadow-md" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 mb-4 text-3xs font-mono tracking-widest uppercase font-bold">
+                <Lock className="w-3.5 h-3.5" /> MAIN ORGANIZER ACCESS
               </div>
               <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white mb-2">
                 ADMIN AUTHENTICATION
@@ -764,132 +752,218 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                     )}
 
                     {/* Rule 3: Render results based on scanTicket response */}
-                    {scanResult && !scanLoading && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className={`p-6 sm:p-8 rounded-3xl border-2 text-left shadow-2xl ${
-                          scanResult.result === 'pass'
-                            ? 'bg-emerald-950/95 border-emerald-500 text-emerald-100 shadow-emerald-950/50'
-                            : scanResult.result === 'already_used'
-                            ? 'bg-rose-950/95 border-rose-500 text-rose-100 shadow-rose-950/80 animate-pulse'
-                            : 'bg-rose-950/90 border-rose-600 text-rose-100 shadow-rose-950/50'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between border-b pb-4 mb-6 border-white/20">
-                          <div className="flex items-center gap-3">
-                            {scanResult.result === 'pass' ? (
-                              <div className="p-3.5 rounded-2xl bg-emerald-500 text-black">
-                                <ShieldCheck className="w-9 h-9" />
-                              </div>
-                            ) : scanResult.result === 'already_used' ? (
-                              <div className="p-3.5 rounded-2xl bg-rose-600 text-white">
-                                <AlertOctagon className="w-9 h-9" />
-                              </div>
-                            ) : (
-                              <div className="p-3.5 rounded-2xl bg-rose-600 text-white">
-                                <XCircle className="w-9 h-9" />
-                              </div>
-                            )}
-                            <div>
-                              <span className="text-3xs font-mono font-bold tracking-widest uppercase block opacity-80">
-                                GATE VERIFICATION RESULT
-                              </span>
-                              <h3 className="text-2xl sm:text-3xl font-serif font-extrabold uppercase">
-                                {scanResult.result === 'pass'
-                                  ? '✓ PASS • ENTRY GRANTED'
-                                  : scanResult.result === 'already_used'
-                                  ? '✗ FAIL • TICKET ALREADY USED'
-                                  : '✗ INVALID TICKET — NOT FOUND'}
-                              </h3>
-                            </div>
-                          </div>
+                    {scanResult && !scanLoading && (() => {
+                      const normalizedResult = (scanResult.result || '').toLowerCase();
+                      const isPass = normalizedResult === 'pass' || normalizedResult === 'entry_granted';
+                      const isAlreadyUsed = normalizedResult === 'already_used';
+                      const isNotApproved = normalizedResult === 'not_approved';
+                      const isInvalid = normalizedResult === 'invalid' || normalizedResult === 'not_found';
 
-                          <button
-                            onClick={() => setScanResult(null)}
-                            className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer"
-                          >
-                            <RotateCcw className="w-5 h-5" />
-                          </button>
-                        </div>
-
-                        {/* PASS RESULT */}
-                        {scanResult.result === 'pass' && scanResult.order && (
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl bg-black/40 border border-emerald-500/30 font-mono text-xs">
-                              <div>
-                                <span className="text-3xs text-emerald-400 block font-bold uppercase">ATTENDEE NAME</span>
-                                <span className="text-xl font-serif font-bold text-white block mt-0.5">
-                                  {scanResult.order.customerName}
-                                </span>
-                                <span className="text-emerald-300 font-bold block mt-1">{scanResult.order.phone}</span>
-                              </div>
-
-                              <div>
-                                <span className="text-3xs text-emerald-400 block font-bold uppercase">PASS TIER & QUANTITY</span>
-                                <span className="text-lg font-serif font-bold text-white block mt-0.5">
-                                  {scanResult.order.tierName}
-                                </span>
-                                <span className="text-emerald-200 font-bold block mt-1">
-                                  {scanResult.order.quantity} PASS • ORDER #{scanResult.order.id}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="p-4 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-xs font-mono font-bold text-emerald-200 flex items-center justify-between flex-wrap gap-2">
-                              <span>✓ 1ST SCAN SUCCESSFUL • Allow attendee into event area.</span>
-                              <span className="text-3xs text-emerald-400">Scanned: {scanResult.scannedAt || 'Just Now'}</span>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* ALREADY USED RESULT */}
-                        {scanResult.result === 'already_used' && (
-                          <div className="space-y-4">
-                            {scanResult.order && (
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl bg-black/50 border border-rose-500/30 font-mono text-xs">
-                                <div>
-                                  <span className="text-3xs text-rose-400 block font-bold uppercase">ATTENDEE NAME</span>
-                                  <span className="text-xl font-serif font-bold text-white block mt-0.5">
-                                    {scanResult.order.customerName}
-                                  </span>
-                                  <span className="text-rose-300 font-bold block mt-1">{scanResult.order.phone}</span>
+                      return (
+                        <motion.div
+                          ref={resultCardRef}
+                          key={`scan-card-${scanResult.result}-${scanResult.order?.id || scanResult.scannedAt || 'result'}`}
+                          initial={{ opacity: 0, y: 12 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2 }}
+                          style={{ opacity: 1 }}
+                          className={`p-6 sm:p-8 rounded-3xl border-2 text-left shadow-2xl transition-all ${
+                            isPass
+                              ? 'bg-emerald-950/95 border-emerald-500 text-emerald-100 shadow-emerald-950/50'
+                              : isAlreadyUsed
+                              ? 'bg-rose-950/95 border-rose-500 text-rose-100 shadow-rose-950/80 animate-pulse'
+                              : isNotApproved
+                              ? 'bg-amber-950/95 border-amber-500 text-amber-100 shadow-amber-950/80'
+                              : isInvalid
+                              ? 'bg-rose-950/90 border-rose-600 text-rose-100 shadow-rose-950/50'
+                              : 'bg-slate-900 border-amber-500/60 text-slate-100 shadow-2xl'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between border-b pb-4 mb-6 border-white/20">
+                            <div className="flex items-center gap-3">
+                              {isPass ? (
+                                <div className="p-3.5 rounded-2xl bg-emerald-500 text-black">
+                                  <ShieldCheck className="w-9 h-9" />
                                 </div>
-
-                                <div>
-                                  <span className="text-3xs text-rose-400 block font-bold uppercase">PASS TIER & ORDER</span>
-                                  <span className="text-lg font-serif font-bold text-white block mt-0.5">
-                                    {scanResult.order.tierName}
-                                  </span>
-                                  <span className="text-rose-200 font-bold block mt-1">
-                                    {scanResult.order.quantity} PASS • ORDER #{scanResult.order.id}
-                                  </span>
+                              ) : isAlreadyUsed ? (
+                                <div className="p-3.5 rounded-2xl bg-rose-600 text-white">
+                                  <AlertOctagon className="w-9 h-9" />
                                 </div>
+                              ) : isNotApproved ? (
+                                <div className="p-3.5 rounded-2xl bg-amber-500 text-black">
+                                  <ShieldAlert className="w-9 h-9" />
+                                </div>
+                              ) : (
+                                <div className="p-3.5 rounded-2xl bg-rose-600 text-white">
+                                  <XCircle className="w-9 h-9" />
+                                </div>
+                              )}
+                              <div>
+                                <span className="text-3xs font-mono font-bold tracking-widest uppercase block opacity-80">
+                                  GATE VERIFICATION RESULT
+                                </span>
+                                <h3 className="text-2xl sm:text-3xl font-serif font-extrabold uppercase">
+                                  {isPass
+                                    ? '✓ PASS • ENTRY GRANTED'
+                                    : isAlreadyUsed
+                                    ? '✗ FAIL • TICKET ALREADY USED'
+                                    : isNotApproved
+                                    ? '⚠ NOT APPROVED YET'
+                                    : isInvalid
+                                    ? '✗ INVALID TICKET — NOT FOUND'
+                                    : `STATUS: ${String(scanResult.result).toUpperCase()}`}
+                                </h3>
                               </div>
-                            )}
-
-                            <div className="p-4 rounded-xl bg-rose-500/30 border border-rose-400/60 text-xs font-mono font-bold text-rose-100">
-                              🛑 DUPLICATE SCAN DENIED! This ticket pass was ALREADY scanned for gate entry at{' '}
-                              <span className="underline font-extrabold text-white">
-                                {scanResult.scannedAt || scanResult.order?.checkedInTime || 'Earlier Today'}
-                              </span>. DO NOT ALLOW ENTRY AGAIN.
                             </div>
-                          </div>
-                        )}
 
-                        {/* INVALID RESULT */}
-                        {scanResult.result === 'invalid' && (
-                          <div className="p-4 rounded-xl bg-rose-500/20 border border-rose-400/40 text-xs font-mono text-rose-100">
-                            {scanResult.message || 'No valid approved ticket pass matching this QR code was found in database.'}
+                            <button
+                              onClick={() => setScanResult(null)}
+                              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white cursor-pointer"
+                            >
+                              <RotateCcw className="w-5 h-5" />
+                            </button>
                           </div>
-                        )}
 
-                        {/* Auto-reset countdown indicator */}
-                        <div className="mt-4 pt-3 border-t border-white/10 text-3xs font-mono opacity-70 text-right">
-                          Auto-resetting scanner in 2.5s for next attendee...
-                        </div>
-                      </motion.div>
-                    )}
+                          {/* PASS RESULT */}
+                          {isPass && (
+                            <div className="space-y-4">
+                              {scanResult.order && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl bg-black/40 border border-emerald-500/30 font-mono text-xs">
+                                  <div>
+                                    <span className="text-3xs text-emerald-400 block font-bold uppercase">ATTENDEE NAME</span>
+                                    <span className="text-xl font-serif font-bold text-white block mt-0.5">
+                                      {scanResult.order.customerName}
+                                    </span>
+                                    <span className="text-emerald-300 font-bold block mt-1">{scanResult.order.phone}</span>
+                                  </div>
+
+                                  <div>
+                                    <span className="text-3xs text-emerald-400 block font-bold uppercase">PASS TIER & QUANTITY</span>
+                                    <span className="text-lg font-serif font-bold text-white block mt-0.5">
+                                      {scanResult.order.tierName}
+                                    </span>
+                                    <span className="text-emerald-200 font-bold block mt-1">
+                                      {scanResult.order.quantity} PASS • ORDER #{scanResult.order.id}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+
+                              <div className="p-4 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-xs font-mono font-bold text-emerald-200 flex items-center justify-between flex-wrap gap-2">
+                                <span>✓ 1ST SCAN SUCCESSFUL • Allow attendee into event area.</span>
+                                <span className="text-3xs text-emerald-400">Scanned: {scanResult.scannedAt || 'Just Now'}</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* ALREADY USED RESULT */}
+                          {isAlreadyUsed && (
+                            <div className="space-y-4">
+                              {scanResult.order && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl bg-black/50 border border-rose-500/30 font-mono text-xs">
+                                  <div>
+                                    <span className="text-3xs text-rose-400 block font-bold uppercase">ATTENDEE NAME</span>
+                                    <span className="text-xl font-serif font-bold text-white block mt-0.5">
+                                      {scanResult.order.customerName}
+                                    </span>
+                                    <span className="text-rose-300 font-bold block mt-1">{scanResult.order.phone}</span>
+                                  </div>
+
+                                  <div>
+                                    <span className="text-3xs text-rose-400 block font-bold uppercase">PASS TIER & ORDER</span>
+                                    <span className="text-lg font-serif font-bold text-white block mt-0.5">
+                                      {scanResult.order.tierName}
+                                    </span>
+                                    <span className="text-rose-200 font-bold block mt-1">
+                                      {scanResult.order.quantity} PASS • ORDER #{scanResult.order.id}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+
+                              <div className="p-4 rounded-xl bg-rose-500/30 border border-rose-400/60 text-xs font-mono font-bold text-rose-100">
+                                🛑 DUPLICATE SCAN DENIED! This ticket pass was ALREADY scanned for gate entry at{' '}
+                                <span className="underline font-extrabold text-white">
+                                  {scanResult.scannedAt || scanResult.order?.checkedInTime || 'Earlier Today'}
+                                </span>. DO NOT ALLOW ENTRY AGAIN.
+                              </div>
+                            </div>
+                          )}
+
+                          {/* NOT APPROVED YET RESULT */}
+                          {isNotApproved && (
+                            <div className="space-y-4">
+                              {scanResult.order && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl bg-black/50 border border-amber-500/30 font-mono text-xs">
+                                  <div>
+                                    <span className="text-3xs text-amber-400 block font-bold uppercase">ATTENDEE NAME</span>
+                                    <span className="text-xl font-serif font-bold text-white block mt-0.5">
+                                      {scanResult.order.customerName}
+                                    </span>
+                                    <span className="text-amber-300 font-bold block mt-1">{scanResult.order.phone}</span>
+                                  </div>
+
+                                  <div>
+                                    <span className="text-3xs text-amber-400 block font-bold uppercase">PASS TIER & ORDER</span>
+                                    <span className="text-lg font-serif font-bold text-white block mt-0.5">
+                                      {scanResult.order.tierName}
+                                    </span>
+                                    <span className="text-amber-200 font-bold block mt-1">
+                                      {scanResult.order.quantity} PASS • ORDER #{scanResult.order.id}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+
+                              <div className="p-4 rounded-xl bg-amber-500/20 border border-amber-400/50 text-xs font-mono font-bold text-amber-200">
+                                ⚠ NOT APPROVED YET! Please approve this order in the Payment Approvals tab first before letting the attendee in.
+                              </div>
+                            </div>
+                          )}
+
+                          {/* INVALID RESULT */}
+                          {isInvalid && (
+                            <div className="p-4 rounded-xl bg-rose-500/20 border border-rose-400/40 text-xs font-mono text-rose-100">
+                              {scanResult.message || 'No valid approved ticket pass matching this QR code was found in database.'}
+                            </div>
+                          )}
+
+                          {/* DEFAULT FALLBACK BODY FOR ANY UNMATCHED RESULT */}
+                          {!isPass && !isAlreadyUsed && !isNotApproved && !isInvalid && (
+                            <div className="space-y-4">
+                              {scanResult.order && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl bg-black/50 border border-slate-700 font-mono text-xs">
+                                  <div>
+                                    <span className="text-3xs text-slate-400 block font-bold uppercase">ATTENDEE NAME</span>
+                                    <span className="text-xl font-serif font-bold text-white block mt-0.5">
+                                      {scanResult.order.customerName}
+                                    </span>
+                                    <span className="text-slate-300 font-bold block mt-1">{scanResult.order.phone}</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-3xs text-slate-400 block font-bold uppercase">PASS TIER & ORDER</span>
+                                    <span className="text-lg font-serif font-bold text-white block mt-0.5">
+                                      {scanResult.order.tierName}
+                                    </span>
+                                    <span className="text-slate-200 font-bold block mt-1">
+                                      {scanResult.order.quantity} PASS • ORDER #{scanResult.order.id}
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
+                              <div className="p-4 rounded-xl bg-slate-800 border border-slate-700 text-xs font-mono text-slate-200">
+                                {scanResult.message || `Verification completed with result: ${scanResult.result}`}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Auto-reset countdown indicator */}
+                          <div className="mt-4 pt-3 border-t border-white/10 text-3xs font-mono opacity-70 text-right">
+                            Auto-resetting scanner in 2.5s for next attendee...
+                          </div>
+                        </motion.div>
+                      );
+                    })()}
                   </div>
                 )}
 

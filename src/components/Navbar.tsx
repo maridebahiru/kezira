@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Ticket } from 'lucide-react';
 import enkuuLogo from '../assets/enkuu.png';
-import logoImg from '../assets/logo.png';
 
 interface NavbarProps {
   onOpenTickets: () => void;
@@ -59,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTickets, onOpenAdmin }) =>
           <a
             href="#"
             onDoubleClick={onOpenAdmin}
-            title="ENQU EVENT - Main Event Presenter (Double-click for Admin)"
+            title="ENQU EVENT - Main Organizer (Double-click for Admin)"
             className="group flex items-center gap-3 cursor-pointer transition-transform duration-300 hover:scale-105"
           >
             <img
@@ -71,8 +70,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTickets, onOpenAdmin }) =>
               <span className={`text-2xs font-mono tracking-widest uppercase font-bold ${scrolled ? 'text-amber-700' : 'text-amber-400'}`}>
                 ENQU EVENT
               </span>
-              <span className={`text-[9px] font-mono tracking-wider ${scrolled ? 'text-slate-500' : 'text-slate-300'}`}>
-                PRESENTS KEZIRA
+              <span className={`text-[9px] font-mono tracking-wider font-semibold uppercase ${scrolled ? 'text-slate-500' : 'text-slate-300'}`}>
+                MAIN ORGANIZER
               </span>
             </div>
           </a>
@@ -135,8 +134,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTickets, onOpenAdmin }) =>
                 <div className="flex items-center gap-3">
                   <img src={enkuuLogo} alt="ENQU EVENT Logo" className="h-12 w-auto object-contain" />
                   <div className="flex flex-col">
-                    <span className="text-xs font-mono font-bold text-amber-800 tracking-wider">ENQU EVENT</span>
-                    <span className="text-3xs font-mono text-slate-500">PRESENTS KEZIRA</span>
+                    <span className="text-xs font-mono font-bold text-amber-800 tracking-wider uppercase">ENQU EVENT</span>
+                    <span className="text-3xs font-mono text-slate-500 font-semibold uppercase">MAIN ORGANIZER</span>
                   </div>
                 </div>
                 <span className="text-2xs font-mono text-amber-700 font-bold">DIRE DAWA</span>

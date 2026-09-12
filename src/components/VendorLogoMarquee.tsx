@@ -26,26 +26,45 @@ export const VendorLogoMarquee: React.FC<VendorLogoMarqueeProps> = ({
       {/* Infinite Marquee Track */}
       <div className="flex overflow-hidden group">
         <div className="flex items-center gap-10 sm:gap-16 animate-marquee group-hover:[animation-play-state:paused] whitespace-nowrap py-2">
-          {marqueeList.map((vendor, index) => (
-            <div
-              key={`${vendor.id}-${index}`}
-              className="flex items-center justify-center px-6 py-4 rounded-2xl bg-white border border-slate-200 hover:border-amber-500/60 hover:shadow-xl transition-all duration-300 group/card shadow-md shrink-0"
-            >
-              {vendor.logoImage ? (
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-slate-50 p-2 flex items-center justify-center border border-amber-500/20 shrink-0">
-                  <img
-                    src={vendor.logoImage}
-                    alt={vendor.name}
-                    className="w-full h-full object-contain filter group-hover/card:scale-110 transition-all duration-300"
-                  />
+          {marqueeList.map((vendor, index) => {
+            const isMainOrganizer = vendor.id === 'v1' || vendor.name.includes('ENQU');
+            return (
+              <div
+                key={`${vendor.id}-${index}`}
+                className={`flex items-center gap-3 px-6 py-4 rounded-2xl bg-white border ${
+                  isMainOrganizer
+                    ? 'border-amber-500 shadow-[0_4px_20px_rgba(245,158,11,0.25)] ring-1 ring-amber-400/50'
+                    : 'border-slate-200 shadow-md'
+                } hover:border-amber-500 hover:shadow-xl transition-all duration-300 group/card shrink-0`}
+              >
+                {vendor.logoImage ? (
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-slate-50 p-2 flex items-center justify-center border border-amber-500/20 shrink-0">
+                    <img
+                      src={vendor.logoImage}
+                      alt={vendor.name}
+                      className="w-full h-full object-contain filter group-hover/card:scale-110 transition-all duration-300"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-slate-50 p-2 flex flex-col items-center justify-center border border-slate-200 shrink-0">
+                    <span className="text-2xl sm:text-3xl">{vendor.symbol}</span>
+                  </div>
+                )}
+                <div className="flex flex-col text-left">
+                  <span className="text-xs sm:text-sm font-mono font-bold text-slate-900 tracking-wider">
+                    {vendor.name}
+                  </span>
+                  <span
+                    className={`text-[9px] font-mono uppercase font-bold tracking-tight ${
+                      isMainOrganizer ? 'text-amber-700 font-extrabold' : 'text-slate-500'
+                    }`}
+                  >
+                    {vendor.category}
+                  </span>
                 </div>
-              ) : (
-                <span className="text-3xl sm:text-4xl opacity-80 group-hover/card:opacity-100 transition-all">
-                  {vendor.symbol}
-                </span>
-              )}
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
       </div>
 

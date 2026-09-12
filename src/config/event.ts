@@ -1,7 +1,6 @@
 import logoImg from '../assets/logo.png';
 import abshirLogo from '../assets/abshir logo.png';
 import enkuImg from '../assets/enku.jpg';
-import mamshaLogo from '../assets/enkuu.png';
 import asset10666 from '../assets/10666 [Converted].jpg';
 import artboard2 from '../assets/Artboard 1 copy 2-100.jpg';
 import artboard3 from '../assets/Artboard 1 copy 3-100.jpg';
@@ -406,8 +405,8 @@ export const eventConfig: EventConfig = {
   ],
 
   vendors: [
-    { id: "v1", name: "ENQU EVENT", category: "MAIN EVENT PRESENTER", logoText: "ENQU EVENT", symbol: "👑", logoImage: enkuuLogo },
-    { id: "v2", name: "MAMSHA", category: "EXCLUSIVE PARTNER", logoText: "MAMSHA", symbol: "🌟", logoImage: mamshaLogo },
+    { id: "v1", name: "ENQU EVENT", category: "MAIN ORGANIZER", logoText: "ENQU EVENT", symbol: "👑", logoImage: enkuuLogo },
+    { id: "v2", name: "MAMSHA", category: "EXCLUSIVE PARTNER", logoText: "MAMSHA", symbol: "🌟" },
     { id: "v3", name: "KEZIRA MEDIA HUB", category: "GRAPHICS, PHOTO & VIDEO", logoText: "KEZIRA MEDIA HUB", symbol: "✦", logoImage: logoImg },
     { id: "v4", name: "ABSHIR PRODUCTION", category: "PRODUCTION", logoText: "ABSHIR PRODUCTION", symbol: "⚡", logoImage: abshirLogo },
   ],
