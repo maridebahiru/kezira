@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, MapPin, Calendar } from 'lucide-react';
 import { HeroVideoConfig } from '../config/event';
 import enkuuLogo from '../assets/enkuu.png';
+import papaGardenLogo from '../assets/papa.png';
 
 interface HeroContentProps {
   currentVideo: HeroVideoConfig;
@@ -46,10 +47,13 @@ export const HeroContent: React.FC<HeroContentProps> = ({
         transition={{ duration: 0.8, delay: 0.2 }}
         className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 border border-amber-500/40 backdrop-blur-md mb-4 sm:mb-6 shadow-md"
       >
-        <img src={enkuuLogo} alt="ENQU EVENT Logo" className="h-5 sm:h-6 w-auto object-contain" />
+        <div className="flex items-center gap-1.5">
+          <img src={enkuuLogo} alt="ENQU EVENT Logo" className="h-5 sm:h-6 w-auto object-contain" />
+          <img src={papaGardenLogo} alt="PAPA GARDEN Logo" className="h-5 sm:h-6 w-auto object-contain" />
+        </div>
         <div className="h-3 w-px bg-amber-400/50" />
         <span className="text-[10px] sm:text-2xs font-mono tracking-[0.18em] sm:tracking-[0.25em] text-amber-300 uppercase font-bold">
-          MAIN ORGANIZER: ENQU EVENT PRESENTS — {eventName} {eventEdition}
+          MAIN ORGANIZERS: ENQU EVENT & PAPA GARDEN PRESENT — {eventName} {eventEdition}
         </span>
       </motion.div>
 

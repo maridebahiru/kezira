@@ -15,7 +15,7 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onOpenTickets }) => {
       <div className="absolute inset-0 z-0">
         <img
           src={asset10666}
-          alt="KEZIRA Final CTA"
+          alt="MAMSHA FEST Final CTA"
           className="w-full h-full object-cover filter brightness-[0.75] contrast-105 saturate-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#FAF8F5] via-[#FAF8F5]/75 to-[#FAF8F5]/50" />
@@ -32,7 +32,7 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onOpenTickets }) => {
         >
           <Sparkles className="w-4 h-4 text-amber-700 animate-pulse" />
           <span className="text-3xs sm:text-2xs font-mono tracking-[0.25em] text-amber-900 uppercase font-bold">
-            OCTOBER 3, 2026 • MIDER BABUR, DIRE DAWA
+            OCTOBER 3, 2026 • PAPA, DIRE DAWA
           </span>
         </motion.div>
 
@@ -43,7 +43,7 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onOpenTickets }) => {
           transition={{ duration: 0.7, delay: 0.1 }}
           className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-serif font-bold text-slate-900 leading-[1.05] tracking-tight mb-5"
         >
-          STEP INTO <span className="gold-text-gradient">KEZIRA 2026</span>
+          STEP INTO <span className="gold-text-gradient">MAMSHA FEST 2026</span>
         </motion.h2>
 
         {/* Minimized Punchy Statement */}

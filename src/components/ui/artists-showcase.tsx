@@ -28,7 +28,6 @@ export const ArtistsShowcase = ({
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const activeIndex = hoveredIndex !== null ? hoveredIndex : selectedIndex;
-  const activeArtist = activeIndex !== null ? artists[activeIndex] : null;
 
   const handleArtistClick = (index: number) => {
     setSelectedIndex((prev) => (prev === index ? null : index));
@@ -162,46 +161,6 @@ export const ArtistsShowcase = ({
             })}
           </div>
         </div>
-
-        {/* Artist Names Lineup — interactive and wrapped cleanly across all screen sizes */}
-        <div className="mt-6 sm:mt-10 flex w-full flex-wrap items-center justify-center gap-1.5 sm:gap-4 md:gap-6 px-2">
-          {artists.map((artist, index) => {
-            const isCurrent = activeIndex === index;
-            return (
-              <button
-                type="button"
-                key={artist.name}
-                onClick={() => handleArtistClick(index)}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                className={cn(
-                  'px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full text-3xs sm:text-xs md:text-sm font-medium tracking-wider uppercase transition-all duration-200 cursor-pointer',
-                  isCurrent
-                    ? 'bg-amber-500/15 text-amber-900 border border-amber-400/80 font-bold shadow-xs scale-105'
-                    : 'text-slate-600 hover:text-slate-900 border border-transparent hover:border-slate-200/80 hover:bg-white/70'
-                )}
-              >
-                {artist.name}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Active Artist Role / Badge Pill */}
-        {activeArtist && (activeArtist.role || activeArtist.badge) && (
-          <motion.div
-            key={activeArtist.name}
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="mt-3 flex items-center justify-center"
-          >
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-3xs sm:text-2xs font-mono font-bold tracking-widest text-amber-900 uppercase">
-              {activeArtist.badge && <span className="text-amber-600">✦</span>}
-              {activeArtist.role || activeArtist.badge}
-            </span>
-          </motion.div>
-        )}
       </div>
     </section>
   );

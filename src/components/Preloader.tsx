@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import enkuuLogo from '../assets/enkuu.png';
+import papaGardenLogo from '../assets/papa.png';
 import logoImg from '../assets/logo.png';
 import abshirLogo from '../assets/abshir logo.png';
 
@@ -51,7 +52,7 @@ export const Preloader: React.FC = () => {
           >
             <div className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
             <span className="text-3xs font-mono tracking-[0.3em] text-amber-800 uppercase font-bold">
-              MAIN ORGANIZER • ENQU EVENT PRESENTS KEZIRA
+              ENQU EVENT & PAPA GARDEN PRESENT MAMSHA FEST
             </span>
           </motion.div>
 
@@ -109,9 +110,9 @@ export const Preloader: React.FC = () => {
               transition={{ delay: 0.3 }}
               className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 opacity-85 hover:opacity-100 transition-opacity text-3xs font-mono tracking-wider text-slate-600"
             >
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-slate-200">
-                <span className="text-amber-600 font-bold">🌟</span>
-                <span className="text-[10px] font-bold text-amber-800 font-mono">MAMSHA • EXCLUSIVE PARTNER</span>
+              <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-white border border-amber-400/40 shadow-xs">
+                <img src={papaGardenLogo} alt="PAPA GARDEN" className="h-5 sm:h-6 w-auto object-contain" />
+                <span className="text-[10px] font-bold text-amber-900 font-mono">PAPA GARDEN • MAIN ORGANIZER</span>
               </div>
               <div className="h-3 w-px bg-slate-300 hidden sm:block" />
               <div className="flex items-center gap-2">

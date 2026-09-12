@@ -109,7 +109,7 @@ export const VenueSection: React.FC = () => {
                   <Calendar className="w-3.5 h-3.5 text-amber-400" />
                   <span>OCTOBER 3, 2026</span>
                 </div>
-                <span className="text-amber-300 font-bold">DIRE DAWA • MIDER BABUR</span>
+                <span className="text-amber-300 font-bold">DIRE DAWA • PAPA</span>
               </div>
             </div>
           </motion.div>

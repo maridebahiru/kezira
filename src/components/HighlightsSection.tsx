@@ -18,7 +18,7 @@ export const HighlightsSection: React.FC = () => {
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/50 mb-3 shadow-sm">
               <Sparkles className="w-3.5 h-3.5 text-amber-700" />
               <span className="text-3xs font-mono tracking-[0.25em] text-amber-800 uppercase font-bold">
-                THE KEZIRA EXPERIENCE
+                THE MAMSHA FEST EXPERIENCE
               </span>
             </div>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-semibold text-slate-900">

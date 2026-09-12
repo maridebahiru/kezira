@@ -63,10 +63,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
               </div>
             </a>
             <p className="text-xs sm:text-sm text-slate-600 font-light max-w-sm leading-relaxed mb-6">
-              A synthesis of high sound design, luxury art installations, and elite hospitality set at Mider Babur, Dire Dawa, Ethiopia.
+              A synthesis of high sound design, luxury art installations, and elite hospitality set at PAPA, Dire Dawa, Ethiopia.
             </p>
             <div className="text-2xs font-mono text-amber-800 font-bold uppercase tracking-widest px-3.5 py-1.5 rounded-lg bg-amber-500/15 border border-amber-400/30">
-              OCTOBER 3, 2026 • MIDER BABUR, DIRE DAWA
+              OCTOBER 3, 2026 • PAPA, DIRE DAWA
             </div>
           </div>
 
@@ -116,7 +116,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
         {/* Bottom Socials & Copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-3xs font-mono tracking-widest text-slate-500">
           <div>
-            © 2026 ENQU EVENT & KEZIRA. ALL RIGHTS RESERVED.
+            © 2026 ENQU EVENT & PAPA GARDEN • MAMSHA FEST. ALL RIGHTS RESERVED.
           </div>
 
           {/* Social Icons */}

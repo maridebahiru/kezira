@@ -14,6 +14,11 @@ import asterImg from '../assets/aster.png';
 import mamshaFestVideo from '../assets/MAMSHA FEST.mp4';
 import mamshaFest3Video from '../assets/MAMSHA FEST 3.mp4';
 import enkuuLogo from '../assets/enkuu.png';
+import papaGardenLogo from '../assets/papa.png';
+import v1Img from '../assets/v1.png';
+import v2Img from '../assets/v2.png';
+import v3Img from '../assets/v3.png';
+import v4Img from '../assets/v4.png';
 
 
 
@@ -159,6 +164,7 @@ export interface EventConfig {
     mediaPoster: string;
   };
   highlights: HighlightItem[];
+  organizers: VendorLogo[];
   vendors: VendorLogo[];
   schedule: DaySchedule[];
   venue: {
@@ -177,14 +183,14 @@ export interface EventConfig {
 }
 
 export const eventConfig: EventConfig = {
-  eventName: "KEZIRA",
+  eventName: "MAMSHA FEST",
   eventEdition: "2026 CINEMATIC EDITION",
   tagline: "THE EXPERIENCE BEGINS HERE",
   subTagline: "A SYNTHESIS OF HIGH SOUND, LUXURY ART, & UNFORGETTABLE MOMENTS",
   date: "SATURDAY, OCTOBER 3, 2026",
   location: "DIRE DAWA, ETHIOPIA",
-  venueName: "MIDER BABUR",
-  venueAddress: "Mider Babur, Dire Dawa, Ethiopia",
+  venueName: "PAPA",
+  venueAddress: "PAPA, Dire Dawa, Ethiopia",
 
   heroVideos: [
     {
@@ -212,7 +218,7 @@ export const eventConfig: EventConfig = {
       src: mamshaFestVideo,
       poster: artboard3,
       title: "LIVE THE EXPERIENCE",
-      subtitle: "CHAPTER III — ETERNAL MEMORIES AT MIDER BABUR",
+      subtitle: "CHAPTER III — ETERNAL MEMORIES AT PAPA",
       objectPosition: "center top",
       duration: 10,
       transitionType: "fade",
@@ -236,7 +242,7 @@ export const eventConfig: EventConfig = {
       },
     ],
     posterUrl: asset10666,
-    title: "KEZIRA 2025 // OFFICIAL CINEMATIC RECAP",
+    title: "MAMSHA FEST 2025 // OFFICIAL CINEMATIC RECAP",
     edition: "PREVIOUS EDITION ARCHIVE",
     subtitle: "Re-live the raw energy, laser skies, and electric crowd of last year's monumental gathering in Dire Dawa.",
     durationFormatted: "02:45",
@@ -343,9 +349,9 @@ export const eventConfig: EventConfig = {
   ],
 
   about: {
-    badge: "THE KEZIRA MANIFESTO",
+    badge: "THE MAMSHA FEST MANIFESTO",
     title: "WHERE LUXURY SOUND, GAMES, ART & GASTRONOMY CONVERGE",
-    description1: "One day. 1,200 curated guests. High sound stages, next-gen gaming lounges (Pool, Table Tennis, Joteni, PS5), artisan foods & smoothie bars, live tattoo studios, and fine art galleries at historic Mider Babur.",
+    description1: "One day. 1,200 curated guests. High sound stages, next-gen gaming lounges (Pool, Table Tennis, Joteni, PS5), artisan foods & smoothie bars, live tattoo studios, and fine art galleries at PAPA.",
     description2: "A transcendent convergence from 9:00 AM to 9:00 PM (3:00 Morning to 3:00 Night local time).",
     stats: [
       { label: "ATTENDEES", value: "1,200" },
@@ -404,11 +410,18 @@ export const eventConfig: EventConfig = {
     },
   ],
 
+  organizers: [
+    { id: "org-1", name: "ENQU EVENT", category: "MAIN ORGANIZER", logoText: "ENQU EVENT", symbol: "👑", logoImage: enkuuLogo },
+    { id: "org-2", name: "PAPA GARDEN", category: "MAIN ORGANIZER", logoText: "PAPA GARDEN", symbol: "🌿", logoImage: papaGardenLogo },
+    { id: "org-3", name: "KEZIRA MEDIA HUB", category: "VIDEO, GRAPHICS & PHOTOGRAPHY", logoText: "KEZIRA MEDIA HUB", symbol: "✦", logoImage: logoImg },
+    { id: "org-4", name: "ABSHIR PRODUCTION", category: "VIDEO, GRAPHICS & PHOTOGRAPHY", logoText: "ABSHIR PRODUCTION", symbol: "⚡", logoImage: abshirLogo },
+  ],
+
   vendors: [
-    { id: "v1", name: "ENQU EVENT", category: "MAIN ORGANIZER", logoText: "ENQU EVENT", symbol: "👑", logoImage: enkuuLogo },
-    { id: "v2", name: "MAMSHA", category: "EXCLUSIVE PARTNER", logoText: "MAMSHA", symbol: "🌟" },
-    { id: "v3", name: "KEZIRA MEDIA HUB", category: "GRAPHICS, PHOTO & VIDEO", logoText: "KEZIRA MEDIA HUB", symbol: "✦", logoImage: logoImg },
-    { id: "v4", name: "ABSHIR PRODUCTION", category: "PRODUCTION", logoText: "ABSHIR PRODUCTION", symbol: "⚡", logoImage: abshirLogo },
+    { id: "v1", name: "GEBETA BAKERY", category: "CAKE & FAST FOOD", logoText: "GEBETA BAKERY", symbol: "🥐", logoImage: v1Img },
+    { id: "v2", name: "JONY JUICE", category: "FRESH JUICES & SMOOTHIES", logoText: "JONY JUICE", symbol: "🍹", logoImage: v2Img },
+    { id: "v3", name: "NOVA LIQER", category: "SPECIALTY LIQUOR & BAR", logoText: "NOVA LIQER", symbol: "🍸", logoImage: v3Img },
+    { id: "v4", name: "AB GIFT & ONLINE SHOPPING", category: "GIFTS & FESTIVAL STORE", logoText: "AB GIFT & STORE", symbol: "🎁", logoImage: v4Img },
   ],
 
   schedule: [
@@ -420,7 +433,7 @@ export const eventConfig: EventConfig = {
         {
           time: "9:00 AM (3:00 Local)",
           title: "GATES OPEN & ARTISAN COFFEE RITUAL",
-          artist: "KEZIRA SOUND COLLECTIVE",
+          artist: "MAMSHA SOUND COLLECTIVE",
           stage: "SUNSET PALMS STAGE",
           category: "music",
           description: "Morning doors open. Traditional Dire Dawa coffee ceremony and ambient string bath.",
@@ -428,7 +441,7 @@ export const eventConfig: EventConfig = {
         {
           time: "11:00 AM (5:00 Local)",
           title: "GAMING ARENA & PS5 / POOL TOURNAMENT",
-          artist: "KEZIRA GAMING CLUB",
+          artist: "MAMSHA GAMING CLUB",
           stage: "RECREATION & GAMING HUB",
           category: "art",
           description: "Pool (Billiards), Table Tennis, Joteni & PlayStation 5 gaming lounges open for festival guests.",
@@ -468,7 +481,7 @@ export const eventConfig: EventConfig = {
         {
           time: "7:30 PM (1:30 Night)",
           title: "3D HOLOGRAPHIC DRONE GENESIS",
-          artist: "ANYMA X KEZIRA LIGHT ARCHITECTS",
+          artist: "ANYMA X MAMSHA LIGHT ARCHITECTS",
           stage: "MAIN ARENA & SKYLINE",
           category: "music",
           description: "500 synchronized drones and 3D visual projection canopy.",
@@ -486,13 +499,13 @@ export const eventConfig: EventConfig = {
   ],
 
   venue: {
-    name: "MIDER BABUR",
-    subtitle: "DIRE DAWA'S HISTORIC RAILWAY ICON",
-    address: "Mider Babur, Dire Dawa, Ethiopia",
+    name: "PAPA",
+    subtitle: "DIRE DAWA'S PREMIER DESTINATION",
+    address: "PAPA, Dire Dawa, Ethiopia",
     coordinates: "9.5931° N, 41.8661° E",
-    description: "An iconic cultural landmark combining century-old railway architecture with cutting-edge open-air stages, luxury sky lounges, and 360° laser displays.",
+    description: "An iconic venue combining premier open-air stages, luxury sky lounges, lush botanical spaces, and 360° laser displays in Dire Dawa.",
     features: [
-      "Historic Franco-Ethiopian Railway Grounds",
+      "Premier Open-Air Grounds & Botanical Lounges",
       "Next-Gen Gaming Lounge (Pool, Table Tennis, Joteni & PS5)",
       "Artisan Foods & Organic Tropical Smoothie Bars",
       "Live Tattoo Studio & Temporary Body Art Pavilion",
@@ -501,7 +514,7 @@ export const eventConfig: EventConfig = {
       "360° Volumetric Laser Overhead Canopy",
     ],
     bgImage: asset10666,
-    mapUrl: "https://maps.google.com/?q=Mider+Babur+Dire+Dawa+Ethiopia",
+    mapUrl: "https://maps.google.com/?q=PAPA+Dire+Dawa+Ethiopia",
   },
 
   ticketTypes: [

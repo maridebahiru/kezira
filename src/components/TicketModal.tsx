@@ -265,7 +265,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                       <span className="text-3xs font-mono text-amber-800 font-bold uppercase tracking-widest block">
                         OCTOBER 3, 2026
                       </span>
-                      <span className="text-3xs font-mono text-slate-600">MIDER BABUR, DIRE DAWA</span>
+                      <span className="text-3xs font-mono text-slate-600">PAPA, DIRE DAWA</span>
                     </div>
                   </div>
 
@@ -445,7 +445,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                         <p><strong>Transaction Ref:</strong> {currentOrder.transactionRef}</p>
                       </div>
                       <p className="text-3xs font-mono text-slate-500 uppercase tracking-widest">
-                        Kezira Media admin will verify your transaction reference. Once approved, your QR ticket code will unlock automatically!
+                        Mamsha Fest admin will verify your transaction reference. Once approved, your QR ticket code will unlock automatically!
                       </p>
                     </div>
                   ) : (
@@ -528,7 +528,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                         Payment Verification in Progress
                       </h4>
                       <p className="text-xs text-slate-700 leading-relaxed mb-4">
-                        Thank you, <strong className="font-serif text-slate-900">{searchResult.customerName}</strong>! Your payment transaction reference (<strong className="font-mono">{searchResult.transactionRef}</strong>) is currently being reviewed by Kezira Media admins.
+                        Thank you, <strong className="font-serif text-slate-900">{searchResult.customerName}</strong>! Your payment transaction reference (<strong className="font-mono">{searchResult.transactionRef}</strong>) is currently being reviewed by Mamsha Fest admins.
                       </p>
                       <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-2xs font-mono text-slate-700 space-y-1">
                         <p><strong>Order ID:</strong> {searchResult.id}</p>
@@ -550,7 +550,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                         Reason: <strong>{searchResult.rejectionReason || 'Transaction reference could not be verified'}</strong>
                       </p>
                       <p className="text-3xs font-mono text-slate-500">
-                        Please contact Kezira Media support on Telegram with Order ID {searchResult.id}.
+                        Please contact Mamsha Fest support on Telegram with Order ID {searchResult.id}.
                       </p>
                     </div>
                   ) : (

@@ -166,7 +166,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTickets, onOpenAdmin }) =>
                 <span>GET YOUR TICKET</span>
               </button>
               <div className="text-center text-3xs font-mono tracking-widest text-slate-500 uppercase">
-                OCTOBER 3, 2026 • MIDER BABUR, DIRE DAWA
+                OCTOBER 3, 2026 • PAPA, DIRE DAWA
               </div>
             </div>
           </motion.div>

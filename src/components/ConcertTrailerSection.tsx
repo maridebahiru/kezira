@@ -325,7 +325,7 @@ export const ConcertTrailerSection: React.FC = () => {
 
                 <div className="flex items-center gap-3">
                   <span className="hidden md:inline text-3xs font-mono tracking-widest text-slate-400 uppercase">
-                    MIDER BABUR // 10K SOULS
+                    PAPA // 10K SOULS
                   </span>
                   <button
                     onClick={() => setIsTheaterOpen(true)}

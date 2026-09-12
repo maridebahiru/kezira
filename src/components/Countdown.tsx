@@ -54,7 +54,7 @@ export const Countdown: React.FC<CountdownProps> = ({
               COUNTDOWN TO OPENING
             </span>
             <span className="text-xs sm:text-base font-serif text-black font-extrabold tracking-wide">
-              OCTOBER 3, 2026 — MIDER BABUR, DIRE DAWA
+              OCTOBER 3, 2026 — PAPA, DIRE DAWA
             </span>
           </div>
         </div>

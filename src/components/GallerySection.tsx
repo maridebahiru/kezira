@@ -48,7 +48,7 @@ export const GallerySection: React.FC = () => {
             MOMENTS CAPTURED IN LIGHT
           </h2>
           <p className="text-sm sm:text-base text-slate-400 max-w-xl font-light mt-4">
-            Explore the visual aesthetic, stage design, and vibrant energy of KEZIRA.
+            Explore the visual aesthetic, stage design, and vibrant energy of MAMSHA FEST.
           </p>
         </div>
 

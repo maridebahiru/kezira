@@ -81,7 +81,7 @@ export const AboutSection: React.FC = () => {
               <div className="relative aspect-[4/5] rounded-2xl overflow-hidden">
                 <img
                   src={about.mediaPoster}
-                  alt="KEZIRA Festival Experience"
+                  alt="MAMSHA FEST Experience"
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 filter brightness-105 contrast-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-transparent to-transparent" />
@@ -96,10 +96,10 @@ export const AboutSection: React.FC = () => {
 
                 <div className="absolute bottom-6 left-6 right-6 p-4 rounded-xl bg-white/95 border border-slate-200 backdrop-blur-md shadow-lg">
                   <span className="text-3xs font-mono tracking-widest text-amber-700 uppercase block mb-1 font-bold">
-                    HISTORIC VENUE
+                    ICONIC VENUE
                   </span>
                   <span className="text-sm font-serif text-slate-900 font-bold block">
-                    MIDER BABUR, DIRE DAWA, ETHIOPIA
+                    PAPA, DIRE DAWA, ETHIOPIA
                   </span>
                 </div>
               </div>

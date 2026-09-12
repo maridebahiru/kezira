@@ -16,6 +16,19 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
+
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+
+// Enable App Check debug token in local development only
+if (import.meta.env.DEV) {
+  (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+}
+
+export const appCheck = initializeAppCheck(app, {
+  provider: new ReCaptchaV3Provider('6LftDbgtAAAAACnb-gwzP0DEaqvBWVlpq-z7LyDj'),
+  isTokenAutoRefreshEnabled: true,
+});
+
 export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
 export const auth = getAuth(app);
 export const db = getFirestore(app);
