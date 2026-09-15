@@ -468,11 +468,11 @@ export const eventConfig: EventConfig = {
         },
         {
           time: "3:00 PM (9:00 Local)",
-          title: "ETHIO-JAZZ & MODULAR SYNTHESIS",
-          artist: "MULATU ASTATKE // LIVE ENSEMBLE",
+          title: "ETHIOPIAN DRILL PERFORMANCE",
+          artist: "49 DRILL",
           stage: "GRAND CINEMATIC ARENA",
           category: "music",
-          description: "The father of Ethio-Jazz in an exclusive festival composition.",
+          description: "Exclusive live performance by 49 Drill, bringing high-energy Ethiopian drill sound to Mamsha Fest.",
         },
         {
           time: "6:00 PM (12:00 Local)",
