@@ -34,6 +34,7 @@ import { auth } from '../config/firebase';
 import { eventConfig, ScheduleItem } from '../config/event';
 import { ticketService, OrderRecord, scanTicket, ScanTicketResponse } from '../services/ticketService';
 import enkuuLogo from '../assets/enkuu.png';
+import papaGardenLogo from '../assets/papa.png';
 
 interface AdminDashboardProps {
   isOpen: boolean;
@@ -429,7 +430,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
         >
           <div className="p-6 sm:p-8 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src={enkuuLogo} alt="MAMSHA FEST Logo" className="h-10 w-auto object-contain" />
+              <img src={enkuuLogo} alt="ENQUU Logo" className="h-10 w-auto object-contain" />
+              <img src={papaGardenLogo} alt="PAPA GARDEN Logo" className="h-10 w-auto object-contain" />
               <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40">
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 <span className="text-3xs font-mono tracking-widest text-amber-300 font-bold uppercase">
@@ -457,7 +459,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
 
           {!isAuthenticated ? (
             <div className="p-8 sm:p-12 flex flex-col items-center justify-center text-center my-auto">
-              <img src={enkuuLogo} alt="MAMSHA FEST Logo" className="h-14 w-auto object-contain mb-4 filter drop-shadow-md" />
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <img src={enkuuLogo} alt="ENQUU Logo" className="h-14 w-auto object-contain filter drop-shadow-md" />
+                <img src={papaGardenLogo} alt="PAPA GARDEN Logo" className="h-14 w-auto object-contain filter drop-shadow-md" />
+              </div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 mb-4 text-3xs font-mono tracking-widest uppercase font-bold">
                 <Lock className="w-3.5 h-3.5" /> MAIN ORGANIZER ACCESS
               </div>

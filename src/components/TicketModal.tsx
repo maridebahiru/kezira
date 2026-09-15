@@ -20,6 +20,7 @@ import {
 import { eventConfig, TicketTier } from '../config/event';
 import { ticketService, OrderRecord } from '../services/ticketService';
 import enkuuLogo from '../assets/enkuu.png';
+import papaGardenLogo from '../assets/papa.png';
 import { TicketPassCard } from './TicketPassCard';
 
 interface TicketModalProps {
@@ -201,7 +202,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
               {step === 'configure' && (
                 <div>
                   <div className="flex items-center gap-3 mb-3">
-                    <img src={enkuuLogo} alt="MAMSHA FEST Logo" className="h-9 w-auto object-contain filter drop-shadow-sm" />
+                    <div className="flex items-center gap-2">
+                      <img src={enkuuLogo} alt="ENQUU Logo" className="h-9 w-auto object-contain filter drop-shadow-sm" />
+                      <img src={papaGardenLogo} alt="PAPA GARDEN Logo" className="h-9 w-auto object-contain filter drop-shadow-sm" />
+                    </div>
                     <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/40">
                       <Sparkles className="w-3.5 h-3.5 text-amber-700" />
                       <span className="text-3xs font-mono tracking-widest text-amber-900 font-bold uppercase">
@@ -535,7 +539,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
           {activeTab === 'lookup' && (
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <img src={enkuuLogo} alt="MAMSHA FEST Logo" className="h-9 w-auto object-contain filter drop-shadow-sm" />
+                <div className="flex items-center gap-2">
+                  <img src={enkuuLogo} alt="ENQUU Logo" className="h-9 w-auto object-contain filter drop-shadow-sm" />
+                  <img src={papaGardenLogo} alt="PAPA GARDEN Logo" className="h-9 w-auto object-contain filter drop-shadow-sm" />
+                </div>
                 <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/40">
                   <QrCode className="w-3.5 h-3.5 text-amber-700" />
                   <span className="text-3xs font-mono tracking-widest text-amber-900 font-bold uppercase">

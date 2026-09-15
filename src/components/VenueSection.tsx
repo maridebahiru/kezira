@@ -50,15 +50,11 @@ export const VenueSection: React.FC = () => {
               {venue.description}
             </p>
 
-            {/* Address & Coordinates Badges with Hover Glow */}
+            {/* Address Badge with Hover Glow */}
             <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm font-mono text-slate-200 mb-8">
               <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md">
                 <MapPin className="w-4 h-4 text-amber-400" />
                 <span>{venue.address}</span>
-              </div>
-              <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/10 border border-white/20 text-slate-300 backdrop-blur-md">
-                <Compass className="w-4 h-4 text-amber-400 animate-spin" style={{ animationDuration: '20s' }} />
-                <span>{venue.coordinates}</span>
               </div>
             </div>
 
