@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Instagram, Youtube, Twitter, Music, Send, Check } from 'lucide-react';
+import React from 'react';
+import { Instagram, Youtube, Twitter, Music, Send } from 'lucide-react';
 import { eventConfig } from '../config/event';
 import enkuuLogo from '../assets/mamsha.png';
 
@@ -8,18 +8,6 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      setSubscribed(true);
-      setTimeout(() => setSubscribed(false), 4000);
-      setEmail('');
-    }
-  };
-
   const getSocialIcon = (iconName: string) => {
     switch (iconName) {
       case 'Instagram':
@@ -41,9 +29,9 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-slate-200">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-slate-200 items-start justify-between">
           {/* Brand Info & Main Logo */}
-          <div className="md:col-span-5 flex flex-col items-start">
+          <div className="md:col-span-7 flex flex-col items-start">
             <a
               href="#"
               className="group inline-flex items-center gap-3 mb-6 transition-transform duration-300 hover:scale-105"
@@ -71,45 +59,21 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
           </div>
 
           {/* Quick Navigation Links */}
-          <div className="md:col-span-3 flex flex-col gap-3">
+          <div className="md:col-span-5 flex flex-col gap-3 md:items-end">
             <span className="text-xs font-mono tracking-widest text-slate-900 font-bold uppercase mb-2">
               NAVIGATION
             </span>
-            {['ABOUT', 'EXPERIENCE', 'SCHEDULE', 'VENUE', 'TICKETS', 'GALLERY'].map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                className="text-xs font-mono tracking-wider text-slate-600 hover:text-amber-700 transition-colors font-medium"
-              >
-                {item}
-              </a>
-            ))}
-          </div>
-
-          {/* Exclusive Newsletter */}
-          <div className="md:col-span-4 flex flex-col">
-            <span className="text-xs font-mono tracking-widest text-slate-900 font-bold uppercase mb-2">
-              EXCLUSIVE ANNOUNCEMENTS
-            </span>
-            <p className="text-xs text-slate-600 font-light mb-4">
-              Subscribe for secret lineup releases and VIP cabana access alerts.
-            </p>
-            <form onSubmit={handleSubscribe} className="relative flex items-center">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your VIP email..."
-                className="w-full py-3 px-4 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-mono focus:outline-none focus:border-amber-500 transition-colors shadow-sm"
-              />
-              <button
-                type="submit"
-                className="absolute right-1.5 py-2 px-4 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold font-mono transition-colors shadow-md"
-              >
-                {subscribed ? <Check className="w-4 h-4 text-black" /> : 'JOIN'}
-              </button>
-            </form>
+            <div className="flex flex-wrap md:flex-col gap-3 md:items-end">
+              {['ABOUT', 'EXPERIENCE', 'SCHEDULE', 'VENUE', 'TICKETS', 'GALLERY'].map((item) => (
+                <a
+                  key={item}
+                  href={`#${item.toLowerCase()}`}
+                  className="text-xs font-mono tracking-wider text-slate-600 hover:text-amber-700 transition-colors font-medium"
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 
