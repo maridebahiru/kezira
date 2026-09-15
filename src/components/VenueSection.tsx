@@ -20,14 +20,14 @@ export const VenueSection: React.FC = () => {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-          {/* Left Venue Description & Map Link */}
+        <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
+          {/* Venue Description & Map Link */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="lg:col-span-7 flex flex-col items-start"
+            className="flex flex-col items-center text-center"
           >
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/50 mb-4 backdrop-blur-md shadow-[0_0_20px_rgba(245,158,11,0.25)]">
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
@@ -40,7 +40,7 @@ export const VenueSection: React.FC = () => {
               {venue.name}
             </h2>
 
-            <p className="text-xs sm:text-sm font-mono tracking-widest text-amber-300 font-bold uppercase mb-6 flex items-center gap-2">
+            <p className="text-xs sm:text-sm font-mono tracking-widest text-amber-300 font-bold uppercase mb-6 flex items-center justify-center gap-2">
               <Radio className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
               <span>{venue.subtitle}</span>
             </p>
@@ -51,7 +51,7 @@ export const VenueSection: React.FC = () => {
             </p>
 
             {/* Address Badge with Hover Glow */}
-            <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm font-mono text-slate-200 mb-8">
+            <div className="flex flex-wrap items-center justify-center gap-3 text-xs sm:text-sm font-mono text-slate-200 mb-8">
               <div className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/10 border border-white/20 backdrop-blur-md">
                 <MapPin className="w-4 h-4 text-amber-400" />
                 <span>{venue.address}</span>
@@ -68,46 +68,6 @@ export const VenueSection: React.FC = () => {
               <Navigation className="w-4 h-4 text-black transition-transform duration-300 group-hover:rotate-45" />
               <span>EXPLORE VENUE MAP</span>
             </a>
-          </motion.div>
-
-          {/* Right Venue Features Checklist Panel */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="lg:col-span-5"
-          >
-            <div className="glass-panel-gold rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-2xl border border-amber-400/50">
-              <h3 className="text-xl font-serif font-bold text-amber-200 mb-6 flex items-center justify-between">
-                <span>VENUE AMENITIES</span>
-                <span className="text-2xs font-mono text-amber-300 uppercase tracking-widest font-bold">
-                  LUXURY SPEC
-                </span>
-              </h3>
-
-              <div className="space-y-3">
-                {venue.features.map((feature) => (
-                  <div
-                    key={feature}
-                    className="flex items-center gap-3.5 p-3 rounded-xl bg-black/60 border border-white/15 hover:border-amber-400/40 transition-colors"
-                  >
-                    <CheckCircle2 className="w-4 h-4 text-amber-400 flex-shrink-0" />
-                    <span className="text-xs sm:text-sm text-slate-100 font-light">
-                      {feature}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6 pt-5 border-t border-amber-500/30 flex items-center justify-between text-2xs font-mono text-slate-300">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-3.5 h-3.5 text-amber-400" />
-                  <span>OCTOBER 3, 2026</span>
-                </div>
-                <span className="text-amber-300 font-bold">DIRE DAWA • PAPA</span>
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>
