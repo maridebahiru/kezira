@@ -5,6 +5,8 @@ import { eventConfig } from '../config/event';
 import { TextReveal } from './TextReveal';
 import { AudioVisualizerBars } from './AudioVisualizerBars';
 
+import papaGardenLogo from '../assets/papa.png';
+
 export const AboutSection: React.FC = () => {
   const { about } = eventConfig;
 
@@ -24,11 +26,16 @@ export const AboutSection: React.FC = () => {
             transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1] }}
             className="lg:col-span-7 flex flex-col items-start"
           >
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/50 mb-5 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
-              <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-              <span className="text-3xs font-mono tracking-[0.25em] text-amber-800 uppercase font-bold">
-                {about.badge}
-              </span>
+            {/* Badge & Papa Garden Header Mark */}
+            <div className="flex items-center gap-3 mb-4 flex-wrap sm:flex-nowrap">
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/50 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                <img src={papaGardenLogo} alt="PAPA GARDEN" className="h-4 sm:h-5 w-auto object-contain shrink-0" />
+                <div className="h-3 w-px bg-amber-400/60" />
+                <Sparkles className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                <span className="text-3xs font-mono tracking-[0.25em] text-amber-800 uppercase font-bold whitespace-nowrap">
+                  {about.badge}
+                </span>
+              </div>
             </div>
 
             <TextReveal

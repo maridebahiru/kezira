@@ -53,7 +53,7 @@ export const HeroContent: React.FC<HeroContentProps> = ({
         </div>
         <div className="h-3 w-px bg-amber-400/50" />
         <span className="text-[10px] sm:text-2xs font-mono tracking-[0.18em] sm:tracking-[0.25em] text-amber-300 uppercase font-bold">
-          MAIN ORGANIZERS: ENQU EVENT & PAPA GARDEN PRESENT — {eventName} {eventEdition}
+          {eventName} {eventEdition}
         </span>
       </motion.div>
 

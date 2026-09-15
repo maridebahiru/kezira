@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Maximize2, X, ChevronLeft, ChevronRight, Play } from 'lucide-react';
 import { eventConfig, GalleryMedia } from '../config/event';
 
+import papaGardenLogo from '../assets/papa.png';
+
 export const GallerySection: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
   const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null);
@@ -38,12 +40,34 @@ export const GallerySection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 mb-4">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span className="text-3xs font-mono tracking-[0.25em] text-amber-300 uppercase">
-              EDITORIAL VISUAL GALLERY
-            </span>
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+              <span className="text-3xs font-mono tracking-[0.25em] text-amber-300 uppercase font-bold whitespace-nowrap">
+                EDITORIAL VISUAL GALLERY
+              </span>
+            </div>
+
+            {/* Dynamic Scrolling PAPA GARDEN Marquee Ticker */}
+            <div className="overflow-hidden whitespace-nowrap py-1 px-3.5 rounded-full bg-amber-500/15 border border-amber-400/40 shadow-sm max-w-[220px] sm:max-w-[260px]">
+              <motion.div
+                animate={{ x: ['0%', '-50%'] }}
+                transition={{ repeat: Infinity, duration: 6, ease: 'linear' }}
+                className="inline-flex gap-3 items-center text-3xs font-mono tracking-[0.25em] text-amber-300 uppercase font-extrabold"
+              >
+                <img src={papaGardenLogo} alt="PAPA GARDEN" className="h-3.5 w-auto object-contain shrink-0" />
+                <span>PAPA GARDEN</span>
+                <span>•</span>
+                <img src={papaGardenLogo} alt="PAPA GARDEN" className="h-3.5 w-auto object-contain shrink-0" />
+                <span>PAPA GARDEN</span>
+                <span>•</span>
+                <img src={papaGardenLogo} alt="PAPA GARDEN" className="h-3.5 w-auto object-contain shrink-0" />
+                <span>PAPA GARDEN</span>
+                <span>•</span>
+              </motion.div>
+            </div>
           </div>
+
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-semibold text-white">
             MOMENTS CAPTURED IN LIGHT
           </h2>

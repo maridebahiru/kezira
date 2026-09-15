@@ -5,6 +5,8 @@ import { HeroContent } from './HeroContent';
 import { HeroVideoNavigation } from './HeroVideoNavigation';
 import { eventConfig } from '../config/event';
 
+import papaGardenLogo from '../assets/papa.png';
+
 interface HeroProps {
   onOpenTickets: () => void;
 }
@@ -133,10 +135,10 @@ export const Hero: React.FC<HeroProps> = ({ onOpenTickets }) => {
         />
       </motion.div>
 
-      {/* 3. Hero Bottom Bar (Navigation & Scroll Indicator) */}
+      {/* 3. Hero Bottom Bar (Navigation) */}
       <motion.div
         style={{ opacity: contentOpacity }}
-        className="relative z-20 max-w-7xl w-full mx-auto px-4 sm:px-8 pb-6 md:pb-8 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6"
+        className="relative z-20 max-w-7xl w-full mx-auto px-4 sm:px-8 pb-6 md:pb-8 flex items-center justify-center md:justify-start"
       >
         {/* Chapter Video Progress Navigation */}
         <HeroVideoNavigation
@@ -145,30 +147,6 @@ export const Hero: React.FC<HeroProps> = ({ onOpenTickets }) => {
           progress={progress}
           onSelectVideo={handleSelectVideo}
         />
-
-        {/* Scroll Indicator */}
-        <div
-          onClick={handleExploreClick}
-          className="group hidden sm:flex items-center gap-3 text-slate-400 hover:text-white cursor-pointer transition-colors duration-300"
-        >
-          <span className="text-3xs font-mono tracking-[0.25em] uppercase">
-            SCROLL TO EXPLORE
-          </span>
-          <div className="relative w-7 h-10 md:w-8 md:h-12 rounded-full border border-white/20 flex items-start justify-center p-1.5 overflow-hidden">
-            <motion.div
-              animate={{
-                y: [0, 14, 0],
-                opacity: [0.3, 1, 0.3],
-              }}
-              transition={{
-                duration: 2.2,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-              className="w-1.5 h-2.5 rounded-full bg-amber-400"
-            />
-          </div>
-        </div>
       </motion.div>
     </section>
   );

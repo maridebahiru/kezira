@@ -109,13 +109,13 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
 
     ctx.fillStyle = '#E2E8F0';
     ctx.font = 'bold 15px monospace';
-    ctx.fillText('MAIN ORGANIZERS: ENQU EVENT & PAPA GARDEN', width / 2, 110);
+    ctx.fillText('MAIN ORGANIZERS: MAMSHA FEST & PAPA GARDEN', width / 2, 110);
 
     ctx.fillStyle = '#94A3B8';
     ctx.font = '13px monospace';
     ctx.fillText('SATURDAY, OCTOBER 3, 2026 • PAPA, DIRE DAWA', width / 2, 134);
 
-    // Load Main Organizer Logos (ENQU EVENT & PAPA GARDEN)
+    // Load Main Organizer Logos (MAMSHA FEST & PAPA GARDEN)
     const enquLogo = new Image();
     enquLogo.crossOrigin = 'anonymous';
     enquLogo.src = enkuuLogo;
@@ -134,12 +134,12 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
       ctx.strokeRect(50, 170, width - 100, 95);
 
       try {
-        // Enqu Event Logo & Label
+        // Mamsha Fest Logo & Label
         ctx.drawImage(enquLogo, 70, 178, 110, 78);
         ctx.textAlign = 'left';
         ctx.fillStyle = '#0F172A';
         ctx.font = 'bold 16px monospace';
-        ctx.fillText('ENQU EVENT', 195, 212);
+        ctx.fillText('MAMSHA FEST', 195, 212);
         ctx.fillStyle = '#D97706';
         ctx.font = 'bold 11px monospace';
         ctx.fillText('👑 MAIN ORGANIZER', 195, 234);
@@ -267,7 +267,7 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
       ctx.fillStyle = '#F59E0B';
       ctx.font = 'bold 15px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('MAMSHA FEST 2026 • ORGANIZED BY ENQU EVENT & PAPA GARDEN', width / 2, 1000);
+      ctx.fillText('MAMSHA FEST 2026 • ORGANIZED BY MAMSHA FEST & PAPA GARDEN', width / 2, 1000);
       ctx.fillStyle = '#94A3B8';
       ctx.font = '12px monospace';
       ctx.fillText('VALID FOR SINGLE ENTRY ON OCTOBER 3, 2026 AT PAPA, DIRE DAWA', width / 2, 1020);
@@ -305,12 +305,12 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
         <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-6 gap-3 flex-wrap">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2.5">
-              <img src={enkuuLogo} alt="ENQU EVENT - Main Organizer" className="h-10 sm:h-12 w-auto object-contain" />
+              <img src={enkuuLogo} alt="ENQUU - Main Organizer" className="h-10 sm:h-12 w-auto object-contain" />
               <img src={papaGardenLogo} alt="PAPA GARDEN - Main Organizer" className="h-10 sm:h-12 w-auto object-contain" />
             </div>
             <div className="h-7 w-px bg-slate-300" />
             <div className="flex flex-col">
-              <span className="text-[11px] font-mono font-bold text-amber-900 tracking-wider">ENQU EVENT & PAPA GARDEN</span>
+              <span className="text-[11px] font-mono font-bold text-amber-900 tracking-wider">ENQUU & PAPA GARDEN</span>
               <span className="text-[8px] font-mono text-amber-700 uppercase font-black tracking-tight">MAIN ORGANIZERS</span>
             </div>
           </div>
@@ -373,7 +373,7 @@ export const TicketPassCard: React.FC<TicketPassCardProps> = ({ order }) => {
                 VERIFIED MAMSHA FEST PASS
               </h4>
               <p className="text-3xs font-mono text-slate-600 max-w-xs mt-0.5">
-                Official pass organized by Enqu Event & Papa Garden. Valid exclusively for {order.customerName} on October 3, 2026.
+                Official pass organized by Mamsha Fest & Papa Garden. Valid exclusively for {order.customerName} on October 3, 2026.
               </p>
             </div>
           </div>

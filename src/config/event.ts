@@ -14,11 +14,15 @@ import asterImg from '../assets/aster.png';
 import mamshaFestVideo from '../assets/MAMSHA FEST.mp4';
 import mamshaFest3Video from '../assets/MAMSHA FEST 3.mp4';
 import enkuuLogo from '../assets/enkuu.png';
+import mamshaFestLogo from '../assets/mamsha.png';
 import papaGardenLogo from '../assets/papa.png';
 import v1Img from '../assets/v1.png';
 import v2Img from '../assets/v2.png';
 import v3Img from '../assets/v3.png';
 import v4Img from '../assets/v4.png';
+import artImg from '../assets/art.jfif';
+import gebetaImg from '../assets/gebeta.jpg';
+import noImg from '../assets/no.jpg';
 
 
 
@@ -195,7 +199,7 @@ export const eventConfig: EventConfig = {
   heroVideos: [
     {
       id: "chapter-01",
-      src: mamshaFestVideo,
+      src: mamshaFest3Video,
       poster: asset10666,
       title: "EXPERIENCE THE MOMENT",
       subtitle: "CHAPTER I — MAMSHA FESTIVAL HIGHLIGHTS",
@@ -215,7 +219,7 @@ export const eventConfig: EventConfig = {
     },
     {
       id: "chapter-03",
-      src: mamshaFestVideo,
+      src: mamshaFest3Video,
       poster: artboard3,
       title: "LIVE THE EXPERIENCE",
       subtitle: "CHAPTER III — ETERNAL MEMORIES AT PAPA",
@@ -378,7 +382,7 @@ export const eventConfig: EventConfig = {
       title: "ARTISAN FOODS & ORGANIC SMOOTHIES",
       subtitle: "Gourmet street bites, fresh smoothie blends & craft mixology.",
       description: "Indulge in delicious gourmet food stalls, fresh-pressed tropical smoothie bars, and specialty coffee mixology.",
-      image: enkuImg,
+      image: gebetaImg,
       tags: ["ARTISAN FOODS", "ORGANIC SMOOTHIES", "BOTANICAL BAR"],
     },
     {
@@ -396,7 +400,7 @@ export const eventConfig: EventConfig = {
       title: "CONTEMPORARY FINE ART & LIVE CANVAS",
       subtitle: "Live painting performances & fine art exhibitions.",
       description: "Immerse yourself in live canvas creation, visual fine art showcases, and interactive art installations beside the music.",
-      image: artboard4,
+      image: artImg,
       tags: ["LIVE CANVAS", "FINE ART", "EXHIBITIONS"],
     },
     {
@@ -405,16 +409,14 @@ export const eventConfig: EventConfig = {
       title: "SYMPHONIC & SYNTHESIS MAIN ARENA",
       subtitle: "Ethio-jazz masters, orchestral strings & afro-electronic peak.",
       description: "Traditional Ethiopian melodies woven into spatial 3D audio architectures and drone canopy shows.",
-      image: asset10666,
+      image: artistesImg,
       tags: ["HEADLINERS", "SPATIAL 3D", "ETHIO-EDM"],
     },
   ],
 
   organizers: [
-    { id: "org-1", name: "ENQU EVENT", category: "MAIN ORGANIZER", logoText: "ENQU EVENT", symbol: "👑", logoImage: enkuuLogo },
+    { id: "org-1", name: "ENQUU", category: "MAIN ORGANIZER", logoText: "ENQUU", symbol: "👑", logoImage: enkuuLogo },
     { id: "org-2", name: "PAPA GARDEN", category: "MAIN ORGANIZER", logoText: "PAPA GARDEN", symbol: "🌿", logoImage: papaGardenLogo },
-    { id: "org-3", name: "KEZIRA MEDIA HUB", category: "VIDEO, GRAPHICS & PHOTOGRAPHY", logoText: "KEZIRA MEDIA HUB", symbol: "✦", logoImage: logoImg },
-    { id: "org-4", name: "ABSHIR PRODUCTION", category: "VIDEO, GRAPHICS & PHOTOGRAPHY", logoText: "ABSHIR PRODUCTION", symbol: "⚡", logoImage: abshirLogo },
   ],
 
   vendors: [
@@ -422,6 +424,8 @@ export const eventConfig: EventConfig = {
     { id: "v2", name: "JONY JUICE", category: "FRESH JUICES & SMOOTHIES", logoText: "JONY JUICE", symbol: "🍹", logoImage: v2Img },
     { id: "v3", name: "NOVA LIQER", category: "SPECIALTY LIQUOR & BAR", logoText: "NOVA LIQER", symbol: "🍸", logoImage: v3Img },
     { id: "v4", name: "AB GIFT & ONLINE SHOPPING", category: "GIFTS & FESTIVAL STORE", logoText: "AB GIFT & STORE", symbol: "🎁", logoImage: v4Img },
+    { id: "v5", name: "KEZIRA MEDIA HUB", category: "VIDEO, GRAPHICS & PHOTOGRAPHY", logoText: "KEZIRA MEDIA HUB", symbol: "✦", logoImage: logoImg },
+    { id: "v6", name: "ABSHIR PRODUCTION", category: "VIDEO, GRAPHICS & PHOTOGRAPHY", logoText: "ABSHIR PRODUCTION", symbol: "⚡", logoImage: abshirLogo },
   ],
 
   schedule: [
@@ -513,7 +517,7 @@ export const eventConfig: EventConfig = {
       "Executive VIP Cabanas & Valet Parking",
       "360° Volumetric Laser Overhead Canopy",
     ],
-    bgImage: asset10666,
+    bgImage: artboard2,
     mapUrl: "https://maps.google.com/?q=PAPA+Dire+Dawa+Ethiopia",
   },
 
@@ -571,7 +575,7 @@ export const eventConfig: EventConfig = {
       id: "g2",
       title: "ARTISAN FOODS & TROPICAL SMOOTHIE BAR",
       category: "FOOD & SMOOTHIES",
-      src: enkuImg,
+      src: gebetaImg,
       type: "image",
       aspectRatio: "portrait",
     },
@@ -587,25 +591,33 @@ export const eventConfig: EventConfig = {
       id: "g4",
       title: "CONTEMPORARY FINE ART & LIVE CANVAS EXHIBIT",
       category: "FINE ART",
-      src: artboard4,
+      src: artImg,
       type: "image",
       aspectRatio: "landscape",
     },
     {
       id: "g5",
-      title: "THE HYPNOTIC MAIN ARENA AT DUSK",
-      category: "PERFORMANCE",
-      src: asset10666,
+      title: "ENQUU — MAIN FESTIVAL ORGANIZER",
+      category: "MAIN ORGANIZER",
+      src: enkuuLogo,
       type: "image",
-      aspectRatio: "wide",
+      aspectRatio: "portrait",
     },
     {
       id: "g6",
-      title: "ROYAL VIP CHAMPAGNE LOUNGE",
-      category: "VIP EXPERIENCE",
-      src: artboard3,
+      title: "PAPA GARDEN — MAIN FESTIVAL ORGANIZER",
+      category: "MAIN ORGANIZER",
+      src: papaGardenLogo,
       type: "image",
       aspectRatio: "portrait",
+    },
+    {
+      id: "g7",
+      title: "NOVA LIQER SPECIALTY BAR & DRINKS",
+      category: "SPECIALTY DRINKS & BAR",
+      src: noImg,
+      type: "image",
+      aspectRatio: "wide",
     },
   ],
 

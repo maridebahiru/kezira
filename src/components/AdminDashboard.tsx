@@ -47,7 +47,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
   const [password, setPassword] = useState<string>('maramawit@2112');
   const [authError, setAuthError] = useState<string>('');
   const [authLoading, setAuthLoading] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'orders' | 'schedule' | 'scanner'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'referrals' | 'schedule' | 'scanner'>('orders');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>(eventConfig.schedule[0].items);
@@ -306,6 +306,33 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
   const pendingCount = pendingOrders.length;
   const totalCheckedIn = orders.filter((o) => o.checkedIn).length;
 
+  // Referral reporting aggregations
+  const referralSourceMap = new Map<string, { source: string; orderCount: number; passesSold: number; totalRevenueETB: number }>();
+  orders.forEach((o) => {
+    const src = (o.referralSource || 'Other').trim();
+    const current = referralSourceMap.get(src) || { source: src, orderCount: 0, passesSold: 0, totalRevenueETB: 0 };
+    current.orderCount += 1;
+    current.passesSold += Number(o.quantity || 1);
+    if (o.status === 'APPROVED' || o.status === 'CHECKED_IN') {
+      current.totalRevenueETB += Number(o.totalETB || 0);
+    }
+    referralSourceMap.set(src, current);
+  });
+  const referralSourceGroups = Array.from(referralSourceMap.values()).sort((a, b) => b.orderCount - a.orderCount);
+
+  const referralCodeMap = new Map<string, { code: string; orderCount: number; passesSold: number; totalRevenueETB: number }>();
+  orders.forEach((o) => {
+    const code = (o.referralCode || 'DIRECT').trim().toUpperCase();
+    const current = referralCodeMap.get(code) || { code, orderCount: 0, passesSold: 0, totalRevenueETB: 0 };
+    current.orderCount += 1;
+    current.passesSold += Number(o.quantity || 1);
+    if (o.status === 'APPROVED' || o.status === 'CHECKED_IN') {
+      current.totalRevenueETB += Number(o.totalETB || 0);
+    }
+    referralCodeMap.set(code, current);
+  });
+  const referralCodeGroups = Array.from(referralCodeMap.values()).sort((a, b) => b.orderCount - a.orderCount);
+
   const handleExportCSV = () => {
     const headers = [
       'Order ID',
@@ -317,6 +344,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
       'Amount ETB',
       'Payment Method',
       'Transaction Ref',
+      'Referral Source',
+      'Referral Code',
       'Status',
       'Checked In',
       'Checked In Time',
@@ -331,6 +360,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
       o.totalETB,
       `"${o.paymentMethod}"`,
       `"${o.transactionRef}"`,
+      `"${o.referralSource || 'Other'}"`,
+      `"${o.referralCode || 'DIRECT'}"`,
       o.status,
       o.checkedIn ? 'YES' : 'NO',
       `"${o.checkedInTime || ''}"`,
@@ -342,6 +373,40 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
     const a = document.createElement('a');
     a.href = url;
     a.download = `Mamsha_Fest_Guestlist_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+  };
+
+  const handleExportReferralCSV = () => {
+    const lines: string[] = [];
+
+    lines.push('--- REFERRAL SOURCE SUMMARY ---');
+    lines.push('Referral Source,Order Count,Total Passes Sold,Total Revenue (ETB)');
+    referralSourceGroups.forEach((g) => {
+      lines.push(`"${g.source}",${g.orderCount},${g.passesSold},${g.totalRevenueETB}`);
+    });
+
+    lines.push('');
+    lines.push('--- REFERRAL PROMOTER CODE SUMMARY ---');
+    lines.push('Referral Code,Order Count,Total Passes Sold,Total Revenue (ETB)');
+    referralCodeGroups.forEach((g) => {
+      lines.push(`"${g.code}",${g.orderCount},${g.passesSold},${g.totalRevenueETB}`);
+    });
+
+    lines.push('');
+    lines.push('--- DETAILED ORDERS REFERRAL LIST ---');
+    lines.push('Order ID,Customer Name,Phone,Pass Tier,Qty,Amount ETB,Referral Source,Referral Code,Status');
+    orders.forEach((o) => {
+      lines.push(
+        `"${o.id}","${o.customerName}","${o.phone}","${o.tierName}",${o.quantity},${o.totalETB},"${o.referralSource || 'Other'}","${o.referralCode || 'DIRECT'}","${o.status}"`
+      );
+    });
+
+    const csvContent = lines.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Mamsha_Fest_Referrals_Report_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
   };
 
@@ -480,6 +545,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                     PAYMENT APPROVALS ({pendingCount} PENDING)
                   </button>
                   <button
+                    onClick={() => setActiveTab('referrals')}
+                    className={`px-5 py-3 rounded-t-xl text-xs font-mono tracking-widest uppercase transition-all border-t border-x cursor-pointer flex items-center gap-2 ${
+                      activeTab === 'referrals'
+                        ? 'bg-slate-900 text-amber-400 border-slate-700 font-bold'
+                        : 'bg-transparent text-slate-400 border-transparent hover:text-white'
+                    }`}
+                  >
+                    <TrendingUp className="w-4 h-4 text-amber-400" /> REFERRALS REPORT
+                  </button>
+                  <button
                     onClick={() => setActiveTab('scanner')}
                     className={`px-5 py-3 rounded-t-xl text-xs font-mono tracking-widest uppercase transition-all border-t border-x cursor-pointer flex items-center gap-2 ${
                       activeTab === 'scanner'
@@ -510,6 +585,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                     <span>EXPORT GUESTLIST (CSV)</span>
                   </button>
                 )}
+
+                {activeTab === 'referrals' && (
+                  <button
+                    onClick={handleExportReferralCSV}
+                    className="px-4 py-2 mb-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-mono font-bold flex items-center gap-2 cursor-pointer transition-colors shadow-md"
+                  >
+                    <Download className="w-4 h-4 text-black" />
+                    <span>EXPORT REFERRAL REPORT (CSV)</span>
+                  </button>
+                )}
               </div>
 
               <div className="flex-1 overflow-y-auto p-6">
@@ -530,12 +615,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                       <table className="w-full text-left border-collapse">
                         <thead>
                           <tr className="border-b border-slate-800 bg-slate-900/60 text-3xs font-mono text-slate-400 uppercase tracking-wider">
-                            <th className="py-4 px-4">ORDER ID</th>
+                             <th className="py-4 px-4">ORDER ID</th>
                             <th className="py-4 px-4">CUSTOMER NAME</th>
                             <th className="py-4 px-4">PHONE</th>
                             <th className="py-4 px-4">PASS TIER</th>
                             <th className="py-4 px-4">QTY</th>
                             <th className="py-4 px-4">AMOUNT</th>
+                            <th className="py-4 px-4">REFERRAL</th>
                             <th className="py-4 px-4">RECEIPT PROOF</th>
                             <th className="py-4 px-4">STATUS</th>
                             <th className="py-4 px-4 text-right">ADMIN ACTIONS</th>
@@ -561,6 +647,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                                 </td>
                                 <td className="py-4 px-4 font-bold text-white">{o.quantity}</td>
                                 <td className="py-4 px-4 text-slate-200 font-bold">{o.totalETB.toLocaleString()} ETB</td>
+                                <td className="py-4 px-4">
+                                  <div className="flex flex-col">
+                                    <span className="font-bold text-amber-300">{o.referralCode || 'DIRECT'}</span>
+                                    <span className="text-3xs text-slate-400 font-mono">
+                                      {o.referralSource || 'Other'}
+                                    </span>
+                                  </div>
+                                </td>
                                 <td className="py-4 px-4">
                                   <div className="flex flex-col">
                                     <span className="font-bold text-white">{o.paymentMethod}</span>
@@ -636,6 +730,119 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                           )}
                         </tbody>
                       </table>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'referrals' && (
+                  <div className="space-y-8">
+                    {/* Section 1: Referral Source Performance Table */}
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="text-lg font-serif font-bold text-white flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5 text-amber-400" />
+                            <span>REFERRAL SOURCES (MARKETING CHANNELS)</span>
+                          </h3>
+                          <p className="text-xs text-slate-400 font-light">
+                            Performance breakdown grouped by marketing acquisition channel
+                          </p>
+                        </div>
+                        <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-3xs font-mono font-bold">
+                          {referralSourceGroups.length} CHANNELS TRACKED
+                        </span>
+                      </div>
+
+                      <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="border-b border-slate-800 bg-slate-900/60 text-3xs font-mono text-slate-400 uppercase tracking-wider">
+                              <th className="py-4 px-4">REFERRAL SOURCE</th>
+                              <th className="py-4 px-4">ORDER COUNT</th>
+                              <th className="py-4 px-4">TOTAL PASSES SOLD</th>
+                              <th className="py-4 px-4 text-right">TOTAL REVENUE (ETB)</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-800/60 text-xs font-mono">
+                            {referralSourceGroups.length === 0 ? (
+                              <tr>
+                                <td colSpan={4} className="py-8 text-center text-slate-500 font-light">
+                                  No referral source data recorded yet.
+                                </td>
+                              </tr>
+                            ) : (
+                              referralSourceGroups.map((g) => (
+                                <tr key={g.source} className="hover:bg-slate-900/40 transition-colors">
+                                  <td className="py-4 px-4 font-bold text-amber-400 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+                                    <span>{g.source}</span>
+                                  </td>
+                                  <td className="py-4 px-4 font-bold text-white">{g.orderCount} ORDERS</td>
+                                  <td className="py-4 px-4 text-slate-200 font-bold">{g.passesSold} PASSES</td>
+                                  <td className="py-4 px-4 text-right font-serif font-bold text-emerald-400 text-sm">
+                                    {g.totalRevenueETB.toLocaleString()} ETB
+                                  </td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* Section 2: Referral Code / Promoter Performance Table */}
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="text-lg font-serif font-bold text-white flex items-center gap-2">
+                            <Ticket className="w-5 h-5 text-amber-400" />
+                            <span>PROMOTER & REFERRAL CODES</span>
+                          </h3>
+                          <p className="text-xs text-slate-400 font-light">
+                            Performance breakdown by specific referral/promoter codes driving conversions
+                          </p>
+                        </div>
+                        <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-3xs font-mono font-bold">
+                          {referralCodeGroups.length} CODES ACTIVE
+                        </span>
+                      </div>
+
+                      <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="border-b border-slate-800 bg-slate-900/60 text-3xs font-mono text-slate-400 uppercase tracking-wider">
+                              <th className="py-4 px-4">REFERRAL CODE</th>
+                              <th className="py-4 px-4">ORDER COUNT</th>
+                              <th className="py-4 px-4">TOTAL PASSES SOLD</th>
+                              <th className="py-4 px-4 text-right">TOTAL REVENUE (ETB)</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-800/60 text-xs font-mono">
+                            {referralCodeGroups.length === 0 ? (
+                              <tr>
+                                <td colSpan={4} className="py-8 text-center text-slate-500 font-light">
+                                  No referral code data recorded yet.
+                                </td>
+                              </tr>
+                            ) : (
+                              referralCodeGroups.map((g) => (
+                                <tr key={g.code} className="hover:bg-slate-900/40 transition-colors">
+                                  <td className="py-4 px-4 font-mono font-bold text-amber-300">
+                                    <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 tracking-wider">
+                                      {g.code}
+                                    </span>
+                                  </td>
+                                  <td className="py-4 px-4 font-bold text-white">{g.orderCount} ORDERS</td>
+                                  <td className="py-4 px-4 text-slate-200 font-bold">{g.passesSold} PASSES</td>
+                                  <td className="py-4 px-4 text-right font-serif font-bold text-emerald-400 text-sm">
+                                    {g.totalRevenueETB.toLocaleString()} ETB
+                                  </td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
                 )}

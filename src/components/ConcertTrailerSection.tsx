@@ -384,31 +384,7 @@ export const ConcertTrailerSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Previous Edition Telemetry & Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 pt-8 border-t border-white/10">
-          {trailer.stats.map((stat, idx) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-sm flex flex-col justify-between"
-            >
-              <div>
-                <span className="text-2xl sm:text-4xl font-serif font-bold gold-text-gradient block">
-                  {stat.value}
-                </span>
-                <span className="text-3xs font-mono tracking-widest text-amber-300 uppercase font-bold mt-1 block">
-                  {stat.label}
-                </span>
-              </div>
-              <p className="text-2xs text-slate-400 font-light mt-2 leading-relaxed">
-                {stat.detail}
-              </p>
-            </motion.div>
-          ))}
-        </div>
+
       </div>
 
       {/* Fullscreen Theater Modal */}

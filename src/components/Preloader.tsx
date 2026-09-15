@@ -52,7 +52,7 @@ export const Preloader: React.FC = () => {
           >
             <div className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
             <span className="text-3xs font-mono tracking-[0.3em] text-amber-800 uppercase font-bold">
-              ENQU EVENT & PAPA GARDEN PRESENT MAMSHA FEST
+              MAMSHA FEST 2026 • DIRE DAWA
             </span>
           </motion.div>
 
@@ -62,7 +62,7 @@ export const Preloader: React.FC = () => {
               initial={{ scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.9, ease: 'easeOut' }}
-              className="relative mb-6 sm:mb-8"
+              className="relative mb-6 sm:mb-8 flex items-center justify-center gap-3 sm:gap-6 px-4"
             >
               {/* Outer Warm Golden Glow Ring */}
               <div className="absolute -inset-6 rounded-full bg-gradient-to-r from-amber-400/25 via-yellow-400/35 to-amber-500/25 blur-2xl animate-pulse" />
@@ -70,7 +70,13 @@ export const Preloader: React.FC = () => {
               <img
                 src={enkuuLogo}
                 alt="ENQU EVENT Logo"
-                className="relative h-28 sm:h-36 md:h-44 w-auto object-contain filter drop-shadow-[0_10px_25px_rgba(217,119,6,0.2)]"
+                className="relative h-16 sm:h-24 md:h-32 w-auto object-contain filter drop-shadow-[0_10px_25px_rgba(217,119,6,0.25)] shrink-0"
+              />
+              <span className="relative text-lg sm:text-2xl font-serif text-amber-600/70 font-semibold select-none shrink-0">×</span>
+              <img
+                src={papaGardenLogo}
+                alt="PAPA GARDEN Logo"
+                className="relative h-16 sm:h-24 md:h-32 w-auto object-contain filter drop-shadow-[0_10px_25px_rgba(217,119,6,0.25)] shrink-0"
               />
             </motion.div>
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Instagram, Youtube, Twitter, Music, Send, Check } from 'lucide-react';
 import { eventConfig } from '../config/event';
-import enkuuLogo from '../assets/enkuu.png';
+import enkuuLogo from '../assets/mamsha.png';
 
 interface FooterProps {
   onOpenAdmin?: () => void;
@@ -50,12 +50,12 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
             >
               <img
                 src={enkuuLogo}
-                alt="ENQU EVENT Logo"
+                alt="MAMSHA FEST Logo"
                 className="h-14 sm:h-18 md:h-22 w-auto object-contain"
               />
               <div className="flex flex-col">
                 <span className="text-sm font-mono font-bold text-amber-800 tracking-widest uppercase">
-                  ENQU EVENT
+                  MAMSHA FEST
                 </span>
                 <span className="text-2xs font-mono text-slate-500 uppercase tracking-wider font-semibold">
                   MAIN EVENT ORGANIZER
@@ -116,7 +116,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
         {/* Bottom Socials & Copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-3xs font-mono tracking-widest text-slate-500">
           <div>
-            © 2026 ENQU EVENT & PAPA GARDEN • MAMSHA FEST. ALL RIGHTS RESERVED.
+            © 2026 MAMSHA FEST & PAPA GARDEN. ALL RIGHTS RESERVED.
           </div>
 
           {/* Social Icons */}

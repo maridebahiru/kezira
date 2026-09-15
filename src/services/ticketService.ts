@@ -32,6 +32,8 @@ export interface OrderRecord {
   rejectionReason?: string;
   checkedIn: boolean;
   checkedInTime?: string;
+  referralSource: string;
+  referralCode: string;
 }
 
 export interface ScanCheckInResult {
@@ -113,6 +115,8 @@ export const ticketService = {
                   rejectionReason: data.rejectionReason,
                   checkedIn: Boolean(data.checkedIn),
                   checkedInTime: data.checkedInTime,
+                  referralSource: data.referralSource || 'Other',
+                  referralCode: data.referralCode || 'DIRECT',
                 } as OrderRecord;
               })
               .filter((o: OrderRecord) => o && !SAMPLE_DEMO_NAMES.includes(o.customerName));
@@ -144,8 +148,25 @@ export const ticketService = {
   },
 
   addOrder: async (orderData: Omit<OrderRecord, 'id'> & { id?: string }): Promise<string> => {
+    // Server-side / Backend validation: Reject write if missing or empty
+    const referralSource = orderData.referralSource?.trim();
+    const referralCode = orderData.referralCode?.trim();
+
+    if (!referralSource) {
+      throw new Error('Server-side Validation Error: referralSource is required and cannot be empty.');
+    }
+    if (!referralCode) {
+      throw new Error('Server-side Validation Error: referralCode is required and cannot be empty.');
+    }
+
     const id = orderData.id || `KZ-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-    const newOrder: OrderRecord = { ...orderData, id, checkedIn: orderData.checkedIn ?? false };
+    const newOrder: OrderRecord = {
+      ...orderData,
+      referralSource,
+      referralCode,
+      id,
+      checkedIn: orderData.checkedIn ?? false,
+    };
 
     // Save locally
     const current = ticketService.getOrders();
@@ -154,7 +175,13 @@ export const ticketService = {
 
     // Sync to Firestore using setDoc with doc ID = order ID
     try {
-      const cleanData: Record<string, any> = { ...orderData, id, checkedIn: orderData.checkedIn ?? false };
+      const cleanData: Record<string, any> = {
+        ...orderData,
+        referralSource,
+        referralCode,
+        id,
+        checkedIn: orderData.checkedIn ?? false,
+      };
       Object.keys(cleanData).forEach((key) => {
         if (cleanData[key] === undefined) {
           delete cleanData[key];

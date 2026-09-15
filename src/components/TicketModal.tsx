@@ -51,6 +51,9 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const [email, setEmail] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<OrderRecord['paymentMethod']>('Telebirr');
   const [transactionRef, setTransactionRef] = useState<string>('');
+  const [referralSource, setReferralSource] = useState<string>('Instagram');
+  const [referralCode, setReferralCode] = useState<string>('');
+  const [referralError, setReferralError] = useState<string>('');
   const [receiptError, setReceiptError] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -87,8 +90,16 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   // Submit Order
   const handleSubmitPayment = async (e: React.FormEvent) => {
     e.preventDefault();
+    const trimmedSource = referralSource.trim();
+    const trimmedCode = referralCode.trim();
+
     if (!customerName || !phone || !transactionRef.trim()) {
       setReceiptError(true);
+      return;
+    }
+
+    if (!trimmedSource || !trimmedCode) {
+      setReferralError('Referral Code is required! Please enter a valid referral code before submitting.');
       return;
     }
 
@@ -102,6 +113,8 @@ export const TicketModal: React.FC<TicketModalProps> = ({
       totalETB,
       paymentMethod,
       transactionRef: transactionRef.trim(),
+      referralSource: trimmedSource,
+      referralCode: trimmedCode,
       purchaseDate: new Date().toISOString().replace('T', ' ').substring(0, 16),
       status: 'PENDING_APPROVAL',
       checkedIn: false,
@@ -109,12 +122,13 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
     try {
       setIsSubmitting(true);
+      setReferralError('');
       const newOrderId = await ticketService.addOrder(orderData);
       setCurrentOrder({ ...orderData, id: newOrderId });
       setStep('submitted');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to submit order:', err);
-      setReceiptError(true);
+      setReferralError(err?.message || 'Failed to submit order. Please check required fields.');
     } finally {
       setIsSubmitting(false);
     }
@@ -187,11 +201,11 @@ export const TicketModal: React.FC<TicketModalProps> = ({
               {step === 'configure' && (
                 <div>
                   <div className="flex items-center gap-3 mb-3">
-                    <img src={enkuuLogo} alt="ENQU EVENT Logo" className="h-9 w-auto object-contain filter drop-shadow-sm" />
+                    <img src={enkuuLogo} alt="MAMSHA FEST Logo" className="h-9 w-auto object-contain filter drop-shadow-sm" />
                     <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/40">
                       <Sparkles className="w-3.5 h-3.5 text-amber-700" />
                       <span className="text-3xs font-mono tracking-widest text-amber-900 font-bold uppercase">
-                        ENQU EVENT • RESERVE FESTIVAL PASS
+                        MAMSHA FEST • RESERVE FESTIVAL PASS
                       </span>
                     </div>
                   </div>
@@ -388,9 +402,60 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                       </span>
                     </div>
 
+                    {/* Referral Source & Referral Code Fields */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-3xs font-mono font-bold text-slate-700 uppercase mb-1">
+                          REFERRAL SOURCE *
+                        </label>
+                        <select
+                          required
+                          value={referralSource}
+                          onChange={(e) => {
+                            setReferralSource(e.target.value);
+                            setReferralError('');
+                          }}
+                          className="w-full py-2.5 px-3 rounded-xl bg-white border border-slate-300 text-xs font-mono text-slate-900 focus:outline-none focus:border-amber-500"
+                        >
+                          <option value="Instagram">Instagram</option>
+                          <option value="Facebook">Facebook</option>
+                          <option value="TikTok">TikTok</option>
+                          <option value="Friend/Word of Mouth">Friend/Word of Mouth</option>
+                          <option value="Radio">Radio</option>
+                          <option value="Poster/Flyer">Poster/Flyer</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-3xs font-mono font-bold text-slate-700 uppercase mb-1">
+                          REFERRAL CODE *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={referralCode}
+                          onChange={(e) => {
+                            setReferralCode(e.target.value);
+                            setReferralError('');
+                          }}
+                          placeholder="e.g. PROMO2026 or Promoter Code"
+                          className={`w-full py-2.5 px-3 rounded-xl bg-white border ${
+                            referralError ? 'border-rose-500' : 'border-slate-300'
+                          } text-xs font-mono text-slate-900 focus:outline-none focus:border-amber-500`}
+                        />
+                      </div>
+                    </div>
+
                     {receiptError && (
                       <span className="text-xs font-mono text-rose-700 flex items-center gap-1 font-bold">
                         <AlertCircle className="w-4 h-4" /> Please fill your name, phone, and transaction reference number!
+                      </span>
+                    )}
+
+                    {referralError && (
+                      <span className="text-xs font-mono text-rose-700 flex items-center gap-1 font-bold">
+                        <AlertCircle className="w-4 h-4" /> {referralError}
                       </span>
                     )}
 
@@ -404,8 +469,8 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                       </button>
                       <button
                         type="submit"
-                        disabled={isSubmitting}
-                        className="w-2/3 py-3.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs font-mono tracking-widest uppercase cursor-pointer shadow-md disabled:opacity-60"
+                        disabled={isSubmitting || !referralCode.trim() || !referralSource.trim()}
+                        className="w-2/3 py-3.5 rounded-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs font-mono tracking-widest uppercase cursor-pointer shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {isSubmitting ? 'SUBMITTING...' : 'SUBMIT FOR ADMIN APPROVAL'}
                       </button>
@@ -470,11 +535,11 @@ export const TicketModal: React.FC<TicketModalProps> = ({
           {activeTab === 'lookup' && (
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <img src={enkuuLogo} alt="ENQU EVENT Logo" className="h-9 w-auto object-contain filter drop-shadow-sm" />
+                <img src={enkuuLogo} alt="MAMSHA FEST Logo" className="h-9 w-auto object-contain filter drop-shadow-sm" />
                 <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-400/40">
                   <QrCode className="w-3.5 h-3.5 text-amber-700" />
                   <span className="text-3xs font-mono tracking-widest text-amber-900 font-bold uppercase">
-                    ENQU EVENT • PASS LOOKUP
+                    MAMSHA FEST • PASS LOOKUP
                   </span>
                 </div>
               </div>

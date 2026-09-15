@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Ticket } from 'lucide-react';
+import mamshaLogo from '../assets/mamsha.png';
 import enkuuLogo from '../assets/enkuu.png';
 
 interface NavbarProps {
@@ -54,24 +55,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTickets, onOpenAdmin }) =>
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between">
-          {/* Main Logo: ENQU EVENT */}
+          {/* Main Logo: MAMSHA FEST */}
           <a
             href="#"
             onDoubleClick={onOpenAdmin}
-            title="ENQU EVENT - Main Organizer (Double-click for Admin)"
+            title="MAMSHA FEST (Double-click for Admin)"
             className="group flex items-center gap-3 cursor-pointer transition-transform duration-300 hover:scale-105"
           >
             <img
-              src={enkuuLogo}
-              alt="ENQU EVENT Main Logo"
+              src={mamshaLogo}
+              alt="MAMSHA FEST Logo"
               className="h-10 sm:h-14 md:h-16 max-h-20 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             />
             <div className="hidden sm:flex flex-col">
               <span className={`text-2xs font-mono tracking-widest uppercase font-bold ${scrolled ? 'text-amber-700' : 'text-amber-400'}`}>
-                ENQU EVENT
+                MAMSHA FEST
               </span>
               <span className={`text-[9px] font-mono tracking-wider font-semibold uppercase ${scrolled ? 'text-slate-500' : 'text-slate-300'}`}>
-                MAIN ORGANIZER
+                BY ENQUU & PAPA
               </span>
             </div>
           </a>
@@ -132,9 +133,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenTickets, onOpenAdmin }) =>
             <div className="flex flex-col gap-6">
               <div className="flex items-center justify-between border-b border-slate-200 pb-4">
                 <div className="flex items-center gap-3">
-                  <img src={enkuuLogo} alt="ENQU EVENT Logo" className="h-12 w-auto object-contain" />
+                  <img src={enkuuLogo} alt="MAMSHA FEST Logo" className="h-12 w-auto object-contain" />
                   <div className="flex flex-col">
-                    <span className="text-xs font-mono font-bold text-amber-800 tracking-wider uppercase">ENQU EVENT</span>
+                    <span className="text-xs font-mono font-bold text-amber-800 tracking-wider uppercase">MAMSHA FEST</span>
                     <span className="text-3xs font-mono text-slate-500 font-semibold uppercase">MAIN ORGANIZER</span>
                   </div>
                 </div>

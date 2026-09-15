@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Ticket, Radio } from 'lucide-react';
-import asset10666 from '../assets/10666 [Converted].jpg';
+import artboard2 from '../assets/Artboard 1 copy 2-100.jpg';
 import { AudioVisualizerBars } from './AudioVisualizerBars';
 
 interface FinalCTAProps {
@@ -14,7 +14,7 @@ export const FinalCTA: React.FC<FinalCTAProps> = ({ onOpenTickets }) => {
       {/* Background Image Visual with Radiant Light Gradient */}
       <div className="absolute inset-0 z-0">
         <img
-          src={asset10666}
+          src={artboard2}
           alt="MAMSHA FEST Final CTA"
           className="w-full h-full object-cover filter brightness-[0.75] contrast-105 saturate-110"
         />
