@@ -464,7 +464,7 @@ export const eventConfig: EventConfig = {
           artist: "DJ NATU X MC SANTA",
           stage: "MAIN ARENA & SKYLINE STAGE",
           category: "music",
-          description: "Explosive electronic DJ performance by DJ Natu blending Afro-tech & urban bass drops.",
+          description: "Explosive electronic DJ performance by DJ Natu.",
         },
         {
           time: "9:00 PM (3:00 Night)",
