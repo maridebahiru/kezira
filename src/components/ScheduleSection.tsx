@@ -85,9 +85,6 @@ export const ScheduleSection: React.FC = () => {
                           <Clock className="w-3.5 h-3.5 text-amber-700" />
                           <span>{item.time}</span>
                         </div>
-                        <span className="text-3xs font-mono tracking-widest text-slate-700 font-bold uppercase px-2.5 py-1 rounded bg-slate-100 border border-slate-200">
-                          {item.stage}
-                        </span>
                       </div>
 
                       <div className="flex items-center gap-3">
