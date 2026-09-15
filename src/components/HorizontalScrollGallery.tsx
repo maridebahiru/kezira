@@ -4,6 +4,7 @@ import { Sparkles, Maximize2, X, ChevronLeft, ChevronRight, Play } from 'lucide-
 import { eventConfig, GalleryMedia } from '../config/event';
 import { TextReveal } from './TextReveal';
 
+import enkuuLogo from '../assets/enkuu.png';
 import papaGardenLogo from '../assets/papa.png';
 
 export const HorizontalScrollGallery: React.FC = () => {
@@ -51,25 +52,21 @@ export const HorizontalScrollGallery: React.FC = () => {
         <div className="max-w-7xl w-full mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-3 mb-3">
-              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/40 shadow-sm">
-                <Sparkles className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                <span className="text-3xs font-mono tracking-[0.25em] text-amber-800 uppercase font-bold whitespace-nowrap">
-                  EDITORIAL VISUAL GALLERY
-                </span>
-              </div>
-
-              {/* Dynamic Scrolling PAPA GARDEN Marquee Ticker */}
-              <div className="overflow-hidden whitespace-nowrap py-1 px-3.5 rounded-full bg-amber-500/15 border border-amber-400/40 shadow-sm max-w-[220px] sm:max-w-[260px]">
+              {/* Dynamic Scrolling ENQUU & PAPA GARDEN Marquee Ticker */}
+              <div className="overflow-hidden whitespace-nowrap py-1 px-3.5 rounded-full bg-amber-500/15 border border-amber-400/40 shadow-sm max-w-[280px] sm:max-w-[340px]">
                 <motion.div
                   animate={{ x: ['0%', '-50%'] }}
-                  transition={{ repeat: Infinity, duration: 6, ease: 'linear' }}
+                  transition={{ repeat: Infinity, duration: 8, ease: 'linear' }}
                   className="inline-flex gap-3 items-center text-3xs font-mono tracking-[0.25em] text-amber-900 uppercase font-extrabold"
                 >
-                  <img src={papaGardenLogo} alt="PAPA GARDEN" className="h-3.5 w-auto object-contain shrink-0" />
-                  <span>PAPA GARDEN</span>
+                  <img src={enkuuLogo} alt="ENQUU" className="h-3.5 w-auto object-contain shrink-0" />
+                  <span>ENQUU</span>
                   <span>•</span>
                   <img src={papaGardenLogo} alt="PAPA GARDEN" className="h-3.5 w-auto object-contain shrink-0" />
                   <span>PAPA GARDEN</span>
+                  <span>•</span>
+                  <img src={enkuuLogo} alt="ENQUU" className="h-3.5 w-auto object-contain shrink-0" />
+                  <span>ENQUU</span>
                   <span>•</span>
                   <img src={papaGardenLogo} alt="PAPA GARDEN" className="h-3.5 w-auto object-contain shrink-0" />
                   <span>PAPA GARDEN</span>
