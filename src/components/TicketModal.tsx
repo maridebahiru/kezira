@@ -16,12 +16,184 @@ import {
   Search,
   XCircle,
   Ticket,
+  Send,
+  Copy,
+  Check,
+  ExternalLink,
+  FileText,
 } from 'lucide-react';
 import { eventConfig, TicketTier } from '../config/event';
 import { ticketService, OrderRecord } from '../services/ticketService';
 import enkuuLogo from '../assets/enkuu.png';
 import papaGardenLogo from '../assets/papa.png';
 import { TicketPassCard } from './TicketPassCard';
+
+interface TelegramReceiptCardProps {
+  order: OrderRecord;
+}
+
+const TelegramReceiptCard: React.FC<TelegramReceiptCardProps> = ({ order }) => {
+  const [copied, setCopied] = useState(false);
+
+  const formattedDetails = `🎟️ MAMSHA FEST 2026 — REGISTRATION RECEIPT VERIFICATION
+---------------------------------
+Order ID: ${order.id}
+Name: ${order.customerName}
+Phone: ${order.phone}
+${order.email ? `Email: ${order.email}\n` : ''}Pass: ${order.quantity}x ${order.tierName}
+Total Amount: ${order.totalETB.toLocaleString()} ETB
+Payment Method: ${order.paymentMethod}
+Txn Ref: ${order.transactionRef}
+Referral: ${order.referralCode || 'DIRECT'} (${order.referralSource || 'Other'})
+Submitted: ${order.purchaseDate}
+---------------------------------
+Hello Admin! I have submitted my payment receipt PDF / Screenshot for Mamsha Fest ticket verification.`;
+
+  const telegramUsername = 'Maridebahiru';
+  const telegramAccount = `https://t.me/${telegramUsername}`;
+  const encodedText = encodeURIComponent(formattedDetails);
+  const telegramDraftUrl = `https://t.me/${telegramUsername}?text=${encodedText}`;
+
+  const handleCopyDetails = () => {
+    navigator.clipboard.writeText(formattedDetails);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 3000);
+  };
+
+  return (
+    <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-b from-white via-slate-50 to-sky-50/50 border-2 border-amber-400/90 text-left shadow-2xl space-y-5 my-4">
+      {/* Header Badge */}
+      <div className="flex items-center justify-between border-b border-amber-200/80 pb-3 flex-wrap gap-2">
+        <div className="flex items-center gap-2 text-amber-900 font-serif font-bold text-base sm:text-lg">
+          <FileCheck className="w-6 h-6 text-amber-600 shrink-0" />
+          <span>PAYMENT RECEIPT VERIFICATION</span>
+        </div>
+        <span className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-950 border border-amber-400 text-3xs font-mono font-bold uppercase tracking-wider">
+          ORDER {order.id}
+        </span>
+      </div>
+
+      <p className="text-xs text-slate-700 leading-relaxed font-light">
+        Thank you, <strong className="font-serif text-slate-900">{order.customerName}</strong>! Your registration is registered. To accelerate admin verification, please send your <strong>Payment Receipt Screenshot or PDF</strong> directly to our Telegram admin.
+      </p>
+
+      {/* Prominent Telegram Button */}
+      <div className="space-y-2">
+        <a
+          href={telegramDraftUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-extrabold text-xs sm:text-sm font-mono tracking-wider uppercase flex items-center justify-center gap-3 shadow-[0_0_25px_rgba(14,165,233,0.4)] transition-all transform hover:-translate-y-0.5 cursor-pointer"
+        >
+          <Send className="w-5 h-5 animate-pulse shrink-0" />
+          <span>SEND RECEIPT PDF / SCREENSHOT ON TELEGRAM</span>
+          <ExternalLink className="w-4 h-4 opacity-80 shrink-0" />
+        </a>
+        <div className="flex items-center justify-between text-3xs font-mono text-slate-600 px-1">
+          <span>Official Admin Telegram Account: <strong className="text-sky-700 font-bold">@{telegramUsername}</strong></span>
+          <a
+            href={telegramAccount}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sky-600 underline font-bold hover:text-sky-800"
+          >
+            t.me/{telegramUsername}
+          </a>
+        </div>
+      </div>
+
+      {/* Detailed Customer & Order Info Card (Positioned Under Telegram Button) */}
+      <div className="p-4 rounded-2xl bg-white border border-amber-300/80 shadow-md space-y-3">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-2 flex-wrap gap-2">
+          <span className="text-3xs font-mono font-extrabold uppercase text-slate-600 tracking-widest flex items-center gap-1.5">
+            <FileText className="w-3.5 h-3.5 text-amber-600" /> YOUR DETAILED REGISTRATION INFORMATION
+          </span>
+          <button
+            onClick={handleCopyDetails}
+            type="button"
+            className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-400/40 text-amber-950 border border-amber-400/60 text-3xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="text-emerald-700 font-bold">COPIED TO CLIPBOARD!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5 text-amber-800" />
+                <span>COPY DETAILS FOR TELEGRAM</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-mono text-slate-800">
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-3xs text-slate-500 uppercase block font-bold">Order ID</span>
+            <span className="font-bold text-amber-700 text-sm">{order.id}</span>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-3xs text-slate-500 uppercase block font-bold">Customer Full Name</span>
+            <span className="font-bold text-slate-900 text-sm">{order.customerName}</span>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-3xs text-slate-500 uppercase block font-bold">Phone Number</span>
+            <span className="font-bold text-slate-900">{order.phone}</span>
+          </div>
+
+          {order.email && (
+            <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+              <span className="text-3xs text-slate-500 uppercase block font-bold">Email Address</span>
+              <span className="font-bold text-slate-900 truncate block">{order.email}</span>
+            </div>
+          )}
+
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-3xs text-slate-500 uppercase block font-bold">Pass Tier & Quantity</span>
+            <span className="font-bold text-slate-900">{order.quantity}x {order.tierName}</span>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-3xs text-slate-500 uppercase block font-bold">Total Investment</span>
+            <span className="font-bold text-emerald-700 text-sm">{order.totalETB.toLocaleString()} ETB</span>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-3xs text-slate-500 uppercase block font-bold">Payment Method</span>
+            <span className="font-bold text-slate-900">{order.paymentMethod}</span>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-3xs text-slate-500 uppercase block font-bold">Transaction Reference</span>
+            <span className="font-bold text-amber-800 select-all tracking-wider">{order.transactionRef}</span>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 col-span-1 sm:col-span-2 flex items-center justify-between flex-wrap gap-1">
+            <div>
+              <span className="text-3xs text-slate-500 uppercase block font-bold">Referral Info</span>
+              <span className="font-bold text-slate-900">{order.referralCode || 'DIRECT'} ({order.referralSource || 'Other'})</span>
+            </div>
+            <span className="text-3xs text-slate-400 font-mono">{order.purchaseDate}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Verification Steps Guide */}
+      <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-300/80 text-2xs font-mono text-slate-700">
+        <span className="font-bold text-amber-950 uppercase block mb-1 tracking-wider">
+          💡 SIMPLE 3-STEP TELEGRAM UPLOAD INSTRUCTIONS:
+        </span>
+        <ol className="list-decimal list-inside space-y-1 text-slate-700 font-light">
+          <li>Click <strong className="text-amber-900 font-bold">COPY DETAILS FOR TELEGRAM</strong> to copy your registration info.</li>
+          <li>Click <strong className="text-sky-700 font-bold">SEND RECEIPT PDF / SCREENSHOT ON TELEGRAM</strong> to open <strong className="text-sky-700">@{telegramUsername}</strong>.</li>
+          <li>Paste your details and attach your bank/Telebirr payment receipt image or PDF file!</li>
+        </ol>
+      </div>
+    </div>
+  );
+};
 
 interface TicketModalProps {
   isOpen: boolean;
@@ -498,25 +670,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                   </div>
 
                   {currentOrder.status === 'PENDING_APPROVAL' ? (
-                    <div className="p-6 rounded-2xl bg-white border border-amber-400 text-left mb-6 shadow-xl">
-                      <div className="flex items-center gap-3 text-amber-900 font-serif font-bold text-lg mb-2">
-                        <FileCheck className="w-6 h-6 text-amber-700" />
-                        <span>RECEIPT SUBMITTED FOR VERIFICATION</span>
-                      </div>
-                      <p className="text-xs text-slate-700 leading-relaxed font-light mb-4">
-                        Thank you, <strong className="font-serif text-slate-900">{currentOrder.customerName}</strong>! Your payment receipt for{' '}
-                        <strong>{currentOrder.quantity} {currentOrder.tierName}</strong> ({currentOrder.totalETB.toLocaleString()} ETB) has been received.
-                      </p>
-                      <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-2xs font-mono text-slate-700 space-y-1 mb-4">
-                        <p><strong>Order Reference:</strong> {currentOrder.id}</p>
-                        <p><strong>Phone:</strong> {currentOrder.phone}</p>
-                        <p><strong>Payment Method:</strong> {currentOrder.paymentMethod}</p>
-                        <p><strong>Transaction Ref:</strong> {currentOrder.transactionRef}</p>
-                      </div>
-                      <p className="text-3xs font-mono text-slate-500 uppercase tracking-widest">
-                        Mamsha Fest admin will verify your transaction reference. Once approved, your QR ticket code will unlock automatically!
-                      </p>
-                    </div>
+                    <TelegramReceiptCard order={currentOrder} />
                   ) : (
                     /* Downloadable Anti-Fraud Pass Card when Approved */
                     <div className="my-4">
@@ -591,27 +745,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                       </p>
                     </div>
                   ) : searchResult.status === 'PENDING_APPROVAL' ? (
-                    <div className="p-6 rounded-2xl bg-white border border-amber-400 text-left mb-4 shadow-xl">
-                      <div className="flex items-center gap-2 text-amber-800 font-mono font-bold text-xs uppercase mb-3">
-                        <Clock className="w-4 h-4 animate-spin text-amber-600" />
-                        <span>STATUS: PENDING VERIFICATION</span>
-                      </div>
-                      <h4 className="font-serif font-bold text-slate-900 text-lg mb-2">
-                        Payment Verification in Progress
-                      </h4>
-                      <p className="text-xs text-slate-700 leading-relaxed mb-4">
-                        Thank you, <strong className="font-serif text-slate-900">{searchResult.customerName}</strong>! Your payment transaction reference (<strong className="font-mono">{searchResult.transactionRef}</strong>) is currently being reviewed by Mamsha Fest admins.
-                      </p>
-                      <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-2xs font-mono text-slate-700 space-y-1">
-                        <p><strong>Order ID:</strong> {searchResult.id}</p>
-                        <p><strong>Pass Tier:</strong> {searchResult.quantity}x {searchResult.tierName}</p>
-                        <p><strong>Total Amount:</strong> {searchResult.totalETB.toLocaleString()} ETB</p>
-                        <p><strong>Payment Method:</strong> {searchResult.paymentMethod}</p>
-                      </div>
-                      <p className="text-3xs font-mono text-slate-500 uppercase tracking-widest mt-4">
-                        Once approved by admin, your official QR ticket pass will automatically unlock here!
-                      </p>
-                    </div>
+                    <TelegramReceiptCard order={searchResult} />
                   ) : searchResult.status === 'REJECTED' ? (
                     <div className="p-6 rounded-2xl bg-rose-50 border border-rose-300 text-left mb-4 shadow-lg">
                       <div className="flex items-center gap-2 text-rose-800 font-mono font-bold text-xs uppercase mb-2">
