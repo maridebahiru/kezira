@@ -619,10 +619,8 @@ export const eventConfig: EventConfig = {
   ],
 
   socialLinks: [
-    { name: "INSTAGRAM", url: "https://instagram.com", icon: "Instagram" },
-    { name: "YOUTUBE", url: "https://youtube.com", icon: "Youtube" },
-    { name: "TWITTER / X", url: "https://twitter.com", icon: "Twitter" },
-    { name: "SPOTIFY", url: "https://spotify.com", icon: "Music" },
+    { name: "INSTAGRAM", url: "https://www.instagram.com/enqu_events?igsh=MTZuOWY1ejN5bGoyYg==", icon: "Instagram" },
+    { name: "TIKTOK", url: "https://www.tiktok.com/@enqu_events?_r=1&_t=ZS-95GFtJOQtuL", icon: "TikTok" },
     { name: "TELEGRAM", url: "https://telegram.org", icon: "Send" },
   ],
 };
