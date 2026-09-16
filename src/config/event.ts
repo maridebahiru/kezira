@@ -621,7 +621,7 @@ export const eventConfig: EventConfig = {
   socialLinks: [
     { name: "INSTAGRAM", url: "https://www.instagram.com/enqu_events?igsh=MTZuOWY1ejN5bGoyYg==", icon: "Instagram" },
     { name: "TIKTOK", url: "https://www.tiktok.com/@enqu_events?_r=1&_t=ZS-95GFtJOQtuL", icon: "TikTok" },
-    { name: "TELEGRAM", url: "https://telegram.org", icon: "Send" },
+    { name: "TELEGRAM", url: "https://t.me/Abeni_Entertainment", icon: "Send" },
   ],
 };
 
