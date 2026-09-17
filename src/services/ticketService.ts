@@ -21,7 +21,7 @@ export interface OrderRecord {
   tierId: string;
   quantity: number;
   totalETB: number;
-  paymentMethod: 'Telebirr' | 'CBE (Commercial Bank)' | 'Dashen Bank' | 'BOA (Bank of Abyssinia)';
+  paymentMethod: 'Telebirr' | 'CBE (Commercial Bank)' | 'Awash Bank' | 'ebirr' | string;
   // Text reference from the customer's bank/Telebirr confirmation,
   // checked manually by the admin before approving.
   // TEMP: replaces file-upload receipts (receiptUrl/receiptFileName) to

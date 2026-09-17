@@ -49,7 +49,7 @@ Submitted: ${order.purchaseDate}
 ---------------------------------
 Hello Admin! I have submitted my payment receipt PDF / Screenshot for Mamsha Fest ticket verification.`;
 
-  const telegramUsername = 'Maridebahiru';
+  const telegramUsername = 'Enqu_events';
   const telegramAccount = `https://t.me/${telegramUsername}`;
   const encodedText = encodeURIComponent(formattedDetails);
   const telegramDraftUrl = `https://t.me/${telegramUsername}?text=${encodedText}`;
@@ -487,21 +487,38 @@ export const TicketModal: React.FC<TicketModalProps> = ({
 
                   {/* Bank Accounts Box */}
                   <div className="p-4 rounded-2xl bg-white/90 border border-slate-300 mb-6 space-y-3 text-xs font-mono">
-                    <span className="text-3xs font-bold uppercase text-slate-500 block tracking-widest">
-                      KEZIRA MEDIA OFFICIAL BANK ACCOUNTS
-                    </span>
+                    <div className="flex items-center justify-between flex-wrap gap-1">
+                      <span className="text-3xs font-bold uppercase text-slate-500 block tracking-widest">
+                        OFFICIAL PAYMENT ACCOUNTS
+                      </span>
+                      <span className="text-3xs font-bold uppercase text-amber-900 bg-amber-100 px-2 py-0.5 rounded-md border border-amber-300">
+                        Account: Abel Zigyalew
+                      </span>
+                    </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
-                        <span className="font-bold text-amber-900 block">TELEBIRR</span>
-                        <span className="text-sm font-bold text-slate-900 block">+251 91 100 2026</span>
-                        <span className="text-3xs text-slate-600 block">Account: KEZIRA MEDIA</span>
+                        <span className="font-bold text-amber-900 block text-2xs uppercase">TELEBIRR</span>
+                        <span className="text-sm font-bold text-slate-900 block">+251 94 295 3270</span>
+                        <span className="text-3xs text-slate-600 block">Account: Abel Zigyalew</span>
                       </div>
 
                       <div className="p-3 rounded-xl bg-blue-50 border border-blue-200">
-                        <span className="font-bold text-blue-900 block">CBE (COMMERCIAL BANK)</span>
-                        <span className="text-sm font-bold text-slate-900 block">1000 4892 3012 4</span>
-                        <span className="text-3xs text-slate-600 block">Account: KEZIRA MEDIA</span>
+                        <span className="font-bold text-blue-900 block text-2xs uppercase">CBE (COMMERCIAL BANK)</span>
+                        <span className="text-sm font-bold text-slate-900 block">1000079215035</span>
+                        <span className="text-3xs text-slate-600 block">Account: Abel Zigyalew</span>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+                        <span className="font-bold text-emerald-900 block text-2xs uppercase">AWASH BANK</span>
+                        <span className="text-sm font-bold text-slate-900 block">013201015231203</span>
+                        <span className="text-3xs text-slate-600 block">Account: Abel Zigyalew</span>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-purple-50 border border-purple-200">
+                        <span className="font-bold text-purple-900 block text-2xs uppercase">EBIRR</span>
+                        <span className="text-sm font-bold text-slate-900 block">+251 94 295 3270</span>
+                        <span className="text-3xs text-slate-600 block">Account: Abel Zigyalew</span>
                       </div>
                     </div>
                   </div>
@@ -547,10 +564,10 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                         onChange={(e) => setPaymentMethod(e.target.value as OrderRecord['paymentMethod'])}
                         className="w-full py-2.5 px-3 rounded-xl bg-white border border-slate-300 text-xs font-mono text-slate-900 focus:outline-none focus:border-amber-500"
                       >
-                        <option value="Telebirr">Telebirr (+251 91 100 2026)</option>
-                        <option value="CBE (Commercial Bank)">CBE (1000 4892 3012 4)</option>
-                        <option value="Dashen Bank">Dashen Bank</option>
-                        <option value="BOA (Bank of Abyssinia)">BOA (Bank of Abyssinia)</option>
+                        <option value="Telebirr">Telebirr (+251 94 295 3270)</option>
+                        <option value="CBE (Commercial Bank)">CBE (1000079215035)</option>
+                        <option value="Awash Bank">Awash Bank (013201015231203)</option>
+                        <option value="ebirr">ebirr (+251 94 295 3270)</option>
                       </select>
                     </div>
 
