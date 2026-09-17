@@ -22,10 +22,6 @@ export interface OrderRecord {
   quantity: number;
   totalETB: number;
   paymentMethod: 'Telebirr' | 'CBE (Commercial Bank)' | 'Awash Bank' | 'ebirr' | string;
-  // Text reference from the customer's bank/Telebirr confirmation,
-  // checked manually by the admin before approving.
-  // TEMP: replaces file-upload receipts (receiptUrl/receiptFileName) to
-  // avoid needing the Firebase Blaze plan / Cloud Storage right now.
   transactionRef: string;
   purchaseDate: string;
   status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'CHECKED_IN';
@@ -34,6 +30,26 @@ export interface OrderRecord {
   checkedInTime?: string;
   referralSource: string;
   referralCode: string;
+}
+
+export interface AuditLogRecord {
+  id: string;
+  timestamp: string;
+  action:
+    | 'ORDER_SUBMITTED'
+    | 'ORDER_APPROVED'
+    | 'ORDER_REJECTED'
+    | 'GATE_CHECKIN'
+    | 'CHECKIN_TOGGLED'
+    | 'ORDER_DELETED'
+    | 'ADMIN_LOGIN'
+    | 'SCHEDULE_ITEM_ADDED'
+    | 'SCHEDULE_ITEM_DELETED'
+    | 'AUDIT_LOGS_CLEARED';
+  performedBy: string;
+  targetId?: string;
+  details: string;
+  severity: 'info' | 'success' | 'warning' | 'error';
 }
 
 export interface ScanCheckInResult {
@@ -48,7 +64,9 @@ export const INITIAL_DEMO_ORDERS: OrderRecord[] = [];
 const SAMPLE_DEMO_NAMES = ['Abebe Bikila', 'Tigist Assefa'];
 
 const STORAGE_KEY = 'kezira_media_ticket_orders_v1';
+const AUDIT_STORAGE_KEY = 'kezira_media_audit_logs_v1';
 const ordersCollection = collection(db, 'orders');
+const auditCollection = collection(db, 'audit_logs');
 
 export const ticketService = {
   getOrders: (): OrderRecord[] => {
@@ -194,13 +212,103 @@ export const ticketService = {
       }
     }
 
+    // Trigger audit log for new order
+    ticketService.addAuditLog({
+      action: 'ORDER_SUBMITTED',
+      performedBy: orderData.customerName || 'Customer',
+      targetId: id,
+      details: `Customer ${orderData.customerName} registered ${orderData.quantity}x ${orderData.tierName} (${orderData.totalETB} ETB) via ${orderData.paymentMethod} (Ref: ${orderData.transactionRef}).`,
+      severity: 'info',
+    });
+
     return id;
+  },
+
+  getAuditLogs: (): AuditLogRecord[] => {
+    try {
+      const data = localStorage.getItem(AUDIT_STORAGE_KEY);
+      if (!data) return [];
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  },
+
+  saveAuditLogs: (logs: AuditLogRecord[]): void => {
+    try {
+      localStorage.setItem(AUDIT_STORAGE_KEY, JSON.stringify(logs.slice(0, 500)));
+    } catch (e) {
+      console.warn('Could not save audit logs to localStorage:', e);
+    }
+  },
+
+  addAuditLog: async (logData: Omit<AuditLogRecord, 'id' | 'timestamp'>): Promise<void> => {
+    const id = `AUD-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`;
+    const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    const newLog: AuditLogRecord = {
+      ...logData,
+      id,
+      timestamp,
+    };
+
+    const current = ticketService.getAuditLogs();
+    const updated = [newLog, ...current];
+    ticketService.saveAuditLogs(updated);
+
+    try {
+      await setDoc(doc(db, 'audit_logs', id), newLog);
+    } catch (err: any) {
+      if (err?.code !== 'permission-denied') {
+        console.warn('Firestore addAuditLog fallback:', err);
+      }
+    }
+  },
+
+  subscribeAuditLogs: (callback: (logs: AuditLogRecord[]) => void): (() => void) => {
+    callback(ticketService.getAuditLogs());
+    try {
+      return onSnapshot(
+        auditCollection,
+        (snapshot: any) => {
+          if (snapshot && snapshot.docs) {
+            const remoteLogs: AuditLogRecord[] = snapshot.docs.map((docSnap: any) => ({
+              id: docSnap.id,
+              ...(docSnap.data() || {}),
+            }));
+            const localLogs = ticketService.getAuditLogs();
+            const map = new Map<string, AuditLogRecord>();
+            localLogs.forEach((l) => map.set(l.id, l));
+            remoteLogs.forEach((l) => map.set(l.id, l));
+            const merged = Array.from(map.values()).sort((a, b) =>
+              (b.timestamp || '').localeCompare(a.timestamp || '')
+            );
+            ticketService.saveAuditLogs(merged);
+            callback(merged);
+          }
+        },
+        () => callback(ticketService.getAuditLogs())
+      );
+    } catch {
+      return () => {};
+    }
+  },
+
+  clearAuditLogs: async (performedBy: string): Promise<void> => {
+    ticketService.saveAuditLogs([]);
+    await ticketService.addAuditLog({
+      action: 'AUDIT_LOGS_CLEARED',
+      performedBy,
+      details: `Audit log history was cleared by ${performedBy}.`,
+      severity: 'warning',
+    });
   },
 
   updateOrderStatus: async (
     orderId: string,
     status: OrderRecord['status'],
-    rejectionReason?: string
+    rejectionReason?: string,
+    performedBy: string = 'Admin User'
   ): Promise<void> => {
     const current = ticketService.getOrders();
     const targetOrder = current.find((o) => o.id === orderId);
@@ -233,9 +341,28 @@ export const ticketService = {
         console.warn('Firestore updateDoc fallback:', err);
       }
     }
+
+    // Trigger Audit Log
+    if (status === 'APPROVED') {
+      await ticketService.addAuditLog({
+        action: 'ORDER_APPROVED',
+        performedBy,
+        targetId: orderId,
+        details: `Approved payment for order ${orderId} (${targetOrder?.customerName || 'Customer'}, ${targetOrder?.totalETB || 0} ETB). Pass unlocked for gate scan.`,
+        severity: 'success',
+      });
+    } else if (status === 'REJECTED') {
+      await ticketService.addAuditLog({
+        action: 'ORDER_REJECTED',
+        performedBy,
+        targetId: orderId,
+        details: `Rejected order ${orderId} (${targetOrder?.customerName || 'Customer'}). Reason: ${rejectionReason || 'Receipt unverified'}.`,
+        severity: 'error',
+      });
+    }
   },
 
-  toggleCheckIn: async (orderId: string, currentlyCheckedIn: boolean): Promise<void> => {
+  toggleCheckIn: async (orderId: string, currentlyCheckedIn: boolean, performedBy: string = 'Admin User'): Promise<void> => {
     const newCheckedIn = !currentlyCheckedIn;
     const newStatus: OrderRecord['status'] = newCheckedIn ? 'CHECKED_IN' : 'APPROVED';
     const nowTime = newCheckedIn
@@ -248,6 +375,7 @@ export const ticketService = {
       : undefined;
 
     const current = ticketService.getOrders();
+    const targetOrder = current.find((o) => o.id === orderId);
     const updated = current.map((o) =>
       o.id === orderId
         ? {
@@ -275,10 +403,20 @@ export const ticketService = {
         console.warn('Firestore toggleCheckIn fallback:', err);
       }
     }
+
+    // Trigger Audit Log
+    await ticketService.addAuditLog({
+      action: 'CHECKIN_TOGGLED',
+      performedBy,
+      targetId: orderId,
+      details: `Gate check-in status manually toggled for order ${orderId} (${targetOrder?.customerName || 'Customer'}). New State: ${newCheckedIn ? 'CHECKED IN' : 'APPROVED'}.`,
+      severity: newCheckedIn ? 'success' : 'info',
+    });
   },
 
-  deleteOrder: async (orderId: string): Promise<void> => {
+  deleteOrder: async (orderId: string, performedBy: string = 'Admin User'): Promise<void> => {
     const current = ticketService.getOrders();
+    const targetOrder = current.find((o) => o.id === orderId);
     const updated = current.filter((o) => o.id !== orderId);
     ticketService.saveOrders(updated);
 
@@ -290,6 +428,15 @@ export const ticketService = {
         console.warn('Firestore deleteDoc fallback:', err);
       }
     }
+
+    // Trigger Audit Log
+    await ticketService.addAuditLog({
+      action: 'ORDER_DELETED',
+      performedBy,
+      targetId: orderId,
+      details: `Deleted order ${orderId} (${targetOrder?.customerName || 'Customer'}, ${targetOrder?.totalETB || 0} ETB) from database.`,
+      severity: 'warning',
+    });
   },
 
   findOrder: (query: string): OrderRecord | undefined => {

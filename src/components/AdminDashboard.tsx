@@ -23,6 +23,10 @@ import {
   AlertOctagon,
   RotateCcw,
   Loader2,
+  ClipboardList,
+  History,
+  AlertTriangle,
+  Activity,
 } from 'lucide-react';
 import {
   signInWithEmailAndPassword,
@@ -32,7 +36,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { eventConfig, ScheduleItem } from '../config/event';
-import { ticketService, OrderRecord, scanTicket, ScanTicketResponse } from '../services/ticketService';
+import { ticketService, OrderRecord, AuditLogRecord, scanTicket, ScanTicketResponse } from '../services/ticketService';
 import enkuuLogo from '../assets/enkuu.png';
 import papaGardenLogo from '../assets/papa.png';
 
@@ -52,10 +56,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
   const [password, setPassword] = useState<string>('');
   const [authError, setAuthError] = useState<string>('');
   const [authLoading, setAuthLoading] = useState<boolean>(false);
-  const [activeTab, setActiveTab] = useState<'orders' | 'referrals' | 'schedule' | 'scanner'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'referrals' | 'audits' | 'scanner' | 'schedule'>('orders');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>(eventConfig.schedule[0].items);
+
+  // Audit Logs State
+  const [auditLogs, setAuditLogs] = useState<AuditLogRecord[]>([]);
+  const [auditSearchTerm, setAuditSearchTerm] = useState<string>('');
+  const [auditSeverityFilter, setAuditSeverityFilter] = useState<'ALL' | 'info' | 'success' | 'warning' | 'error'>('ALL');
 
   // Scanner State & Refs
   const [scanInput, setScanInput] = useState<string>('');
@@ -107,6 +116,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
       }
     });
     return () => unsubscribeOrders();
+  }, [isOpen, isAuthenticated]);
+
+  // Audit Log feed subscription
+  useEffect(() => {
+    if (!isOpen) return;
+    setAuditLogs(ticketService.getAuditLogs());
+    const unsubscribeAudits = ticketService.subscribeAuditLogs((updatedAudits) => {
+      if (Array.isArray(updatedAudits)) {
+        setAuditLogs(updatedAudits);
+      }
+    });
+    return () => unsubscribeAudits();
   }, [isOpen, isAuthenticated]);
 
   // Camera stream & real-time frame scanning loop using jsQR
@@ -178,6 +199,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
 
   if (!isOpen) return null;
 
+  const currentAdminEmail = auth.currentUser?.email || email || 'Admin User';
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError('');
@@ -193,15 +216,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
 
     try {
       await signInWithEmailAndPassword(auth, cleanEmail, password);
+      await ticketService.addAuditLog({
+        action: 'ADMIN_LOGIN',
+        performedBy: cleanEmail,
+        details: `Admin user ${cleanEmail} logged into Admin Dashboard.`,
+        severity: 'info',
+      });
     } catch (err: any) {
       console.error('🔐 [Admin Auth Error]:', err);
-      // If account does not exist in Firebase Auth for authorized admin email, create it
       if (
         ALLOWED_ADMIN_EMAILS.includes(cleanEmail) &&
         (err?.code === 'auth/user-not-found' || err?.code === 'auth/invalid-credential')
       ) {
         try {
           await createUserWithEmailAndPassword(auth, cleanEmail, password);
+          await ticketService.addAuditLog({
+            action: 'ADMIN_LOGIN',
+            performedBy: cleanEmail,
+            details: `Created and logged into new Admin account ${cleanEmail}.`,
+            severity: 'info',
+          });
           return;
         } catch (createErr: any) {
           console.error('🔐 [Admin Auth Error on Create]:', createErr);
@@ -222,21 +256,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
   };
 
   const handleApproveOrder = async (orderId: string) => {
-    await ticketService.updateOrderStatus(orderId, 'APPROVED');
+    await ticketService.updateOrderStatus(orderId, 'APPROVED', undefined, currentAdminEmail);
   };
 
   const handleRejectOrder = async (orderId: string) => {
-    await ticketService.updateOrderStatus(orderId, 'REJECTED', 'Transaction reference could not be verified');
+    await ticketService.updateOrderStatus(orderId, 'REJECTED', 'Transaction reference could not be verified', currentAdminEmail);
   };
 
   const handleToggleCheckIn = async (orderId: string) => {
     const order = orders.find((o) => o.id === orderId);
     if (!order) return;
-    await ticketService.toggleCheckIn(orderId, order.checkedIn);
+    await ticketService.toggleCheckIn(orderId, order.checkedIn, currentAdminEmail);
   };
 
   const handleDeleteOrder = async (orderId: string) => {
-    await ticketService.deleteOrder(orderId);
+    await ticketService.deleteOrder(orderId, currentAdminEmail);
   };
 
   /**
@@ -599,6 +633,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                     <TrendingUp className="w-4 h-4 text-amber-400" /> REFERRALS REPORT
                   </button>
                   <button
+                    onClick={() => setActiveTab('audits')}
+                    className={`px-5 py-3 rounded-t-xl text-xs font-mono tracking-widest uppercase transition-all border-t border-x cursor-pointer flex items-center gap-2 ${
+                      activeTab === 'audits'
+                        ? 'bg-slate-900 text-amber-400 border-slate-700 font-bold'
+                        : 'bg-transparent text-slate-400 border-transparent hover:text-white'
+                    }`}
+                  >
+                    <ClipboardList className="w-4 h-4 text-amber-400" /> AUDIT REPORT ({auditLogs.length})
+                  </button>
+                  <button
                     onClick={() => setActiveTab('scanner')}
                     className={`px-5 py-3 rounded-t-xl text-xs font-mono tracking-widest uppercase transition-all border-t border-x cursor-pointer flex items-center gap-2 ${
                       activeTab === 'scanner'
@@ -637,6 +681,34 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                   >
                     <Download className="w-4 h-4 text-black" />
                     <span>EXPORT REFERRAL REPORT (CSV)</span>
+                  </button>
+                )}
+
+                {activeTab === 'audits' && (
+                  <button
+                    onClick={() => {
+                      const headers = ['Audit ID', 'Timestamp', 'Action Type', 'Performed By', 'Target ID', 'Severity', 'Details'];
+                      const rows = auditLogs.map((log) => [
+                        log.id,
+                        `"${log.timestamp}"`,
+                        `"${log.action}"`,
+                        `"${log.performedBy}"`,
+                        `"${log.targetId || ''}"`,
+                        `"${log.severity}"`,
+                        `"${log.details.replace(/"/g, '""')}"`,
+                      ]);
+                      const csvContent = [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+                      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `Mamsha_Fest_Audit_Report_${new Date().toISOString().split('T')[0]}.csv`;
+                      a.click();
+                    }}
+                    className="px-4 py-2 mb-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-mono font-bold flex items-center gap-2 cursor-pointer transition-colors shadow-md"
+                  >
+                    <Download className="w-4 h-4 text-black" />
+                    <span>EXPORT AUDIT REPORT (CSV)</span>
                   </button>
                 )}
               </div>
@@ -887,6 +959,164 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                           </tbody>
                         </table>
                       </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'audits' && (
+                  <div className="space-y-6">
+                    {/* Audit Report Header */}
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                      <div>
+                        <h3 className="text-lg font-serif font-bold text-white flex items-center gap-2">
+                          <ClipboardList className="w-5 h-5 text-amber-400" />
+                          <span>SYSTEM AUDIT TRAIL & OPERATIONAL REPORT</span>
+                        </h3>
+                        <p className="text-xs text-slate-400 font-light">
+                          Tamper-evident, timestamped operational report logging every order, admin action, gate scan, and system modification.
+                        </p>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          if (window.confirm('Are you sure you want to clear audit history? This action will be logged.')) {
+                            await ticketService.clearAuditLogs(currentAdminEmail);
+                          }
+                        }}
+                        className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-rose-900/40 text-slate-400 hover:text-rose-300 border border-slate-800 text-3xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> CLEAR AUDIT LOGS
+                      </button>
+                    </div>
+
+                    {/* Stats Metrics Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                      <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                        <span className="text-3xs font-mono text-slate-400 uppercase tracking-widest block font-bold">TOTAL AUDIT EVENTS</span>
+                        <span className="text-2xl font-serif font-bold text-amber-400">{auditLogs.length} LOGS</span>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                        <span className="text-3xs font-mono text-slate-400 uppercase tracking-widest block font-bold">APPROVED ORDERS</span>
+                        <span className="text-2xl font-serif font-bold text-emerald-400">
+                          {auditLogs.filter((l) => l.action === 'ORDER_APPROVED').length}
+                        </span>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                        <span className="text-3xs font-mono text-slate-400 uppercase tracking-widest block font-bold">GATE CHECK-INS</span>
+                        <span className="text-2xl font-serif font-bold text-blue-400">
+                          {auditLogs.filter((l) => l.action === 'GATE_CHECKIN' || l.action === 'CHECKIN_TOGGLED').length}
+                        </span>
+                      </div>
+                      <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+                        <span className="text-3xs font-mono text-slate-400 uppercase tracking-widest block font-bold">SECURITY & WARNINGS</span>
+                        <span className="text-2xl font-serif font-bold text-rose-400">
+                          {auditLogs.filter((l) => l.severity === 'error' || l.severity === 'warning').length}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Filter Bar */}
+                    <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                      <div className="relative flex-1 w-full">
+                        <Search className="w-4 h-4 text-slate-500 absolute left-4 top-3" />
+                        <input
+                          type="text"
+                          value={auditSearchTerm}
+                          onChange={(e) => setAuditSearchTerm(e.target.value)}
+                          placeholder="Filter logs by order ID, admin email, action, or keyword..."
+                          className="w-full py-2.5 pl-11 pr-4 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-amber-500"
+                        />
+                      </div>
+
+                      {/* Severity Pill Selector */}
+                      <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
+                        {(['ALL', 'info', 'success', 'warning', 'error'] as const).map((sev) => (
+                          <button
+                            key={sev}
+                            onClick={() => setAuditSeverityFilter(sev)}
+                            className={`px-3 py-1.5 rounded-lg text-3xs font-mono font-bold uppercase transition-colors cursor-pointer border ${
+                              auditSeverityFilter === sev
+                                ? 'bg-amber-500 text-black border-amber-400 font-extrabold'
+                                : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                            }`}
+                          >
+                            {sev}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Audit Logs Table */}
+                    <div className="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-950 max-h-[500px]">
+                      <table className="w-full text-left border-collapse">
+                        <thead className="sticky top-0 bg-slate-900 border-b border-slate-800 z-10">
+                          <tr className="text-3xs font-mono text-slate-400 uppercase tracking-wider">
+                            <th className="py-3 px-4">TIMESTAMP</th>
+                            <th className="py-3 px-4">ACTION TYPE</th>
+                            <th className="py-3 px-4">PERFORMED BY</th>
+                            <th className="py-3 px-4">TARGET ID</th>
+                            <th className="py-3 px-4">AUDIT EVENT DETAILS</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-800/60 text-xs font-mono">
+                          {auditLogs.filter((log) => {
+                            const matchesSearch =
+                              log.details.toLowerCase().includes(auditSearchTerm.toLowerCase()) ||
+                              log.performedBy.toLowerCase().includes(auditSearchTerm.toLowerCase()) ||
+                              log.action.toLowerCase().includes(auditSearchTerm.toLowerCase()) ||
+                              (log.targetId && log.targetId.toLowerCase().includes(auditSearchTerm.toLowerCase()));
+                            const matchesSeverity = auditSeverityFilter === 'ALL' || log.severity === auditSeverityFilter;
+                            return matchesSearch && matchesSeverity;
+                          }).length === 0 ? (
+                            <tr>
+                              <td colSpan={5} className="py-12 text-center text-slate-500 font-light">
+                                No audit log events recorded matching your query.
+                              </td>
+                            </tr>
+                          ) : (
+                            auditLogs
+                              .filter((log) => {
+                                const matchesSearch =
+                                  log.details.toLowerCase().includes(auditSearchTerm.toLowerCase()) ||
+                                  log.performedBy.toLowerCase().includes(auditSearchTerm.toLowerCase()) ||
+                                  log.action.toLowerCase().includes(auditSearchTerm.toLowerCase()) ||
+                                  (log.targetId && log.targetId.toLowerCase().includes(auditSearchTerm.toLowerCase()));
+                                const matchesSeverity = auditSeverityFilter === 'ALL' || log.severity === auditSeverityFilter;
+                                return matchesSearch && matchesSeverity;
+                              })
+                              .map((log) => (
+                                <tr key={log.id} className="hover:bg-slate-900/40 transition-colors">
+                                  <td className="py-3.5 px-4 text-slate-400 text-3xs whitespace-nowrap font-mono font-semibold">
+                                    {log.timestamp}
+                                  </td>
+                                  <td className="py-3.5 px-4 whitespace-nowrap">
+                                    <span
+                                      className={`px-2.5 py-1 rounded-full text-3xs font-bold uppercase border ${
+                                        log.severity === 'success'
+                                          ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                                          : log.severity === 'error'
+                                          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                                          : log.severity === 'warning'
+                                          ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                          : 'bg-blue-500/20 text-blue-300 border-blue-500/40'
+                                      }`}
+                                    >
+                                      {log.action.replace(/_/g, ' ')}
+                                    </span>
+                                  </td>
+                                  <td className="py-3.5 px-4 font-bold text-white whitespace-nowrap">
+                                    {log.performedBy}
+                                  </td>
+                                  <td className="py-3.5 px-4 font-bold text-amber-400 whitespace-nowrap">
+                                    {log.targetId || '—'}
+                                  </td>
+                                  <td className="py-3.5 px-4 text-slate-300 leading-relaxed font-light">
+                                    {log.details}
+                                  </td>
+                                </tr>
+                              ))
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 )}
