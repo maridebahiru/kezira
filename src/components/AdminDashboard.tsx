@@ -36,6 +36,10 @@ import { ticketService, OrderRecord, scanTicket, ScanTicketResponse } from '../s
 import enkuuLogo from '../assets/enkuu.png';
 import papaGardenLogo from '../assets/papa.png';
 
+const ALLOWED_ADMIN_EMAILS = [
+  'maramawitdereje93@gmail.com',
+];
+
 interface AdminDashboardProps {
   isOpen: boolean;
   onClose: () => void;
@@ -44,8 +48,8 @@ interface AdminDashboardProps {
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authChecked, setAuthChecked] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>('maramawitdereje93@gmail.com');
-  const [password, setPassword] = useState<string>('maramawit@2112');
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [authError, setAuthError] = useState<string>('');
   const [authLoading, setAuthLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'orders' | 'referrals' | 'schedule' | 'scanner'>('orders');
@@ -73,10 +77,21 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
   const [newScheduleStage, setNewScheduleStage] = useState<string>('GRAND CINEMATIC ARENA');
   const [newScheduleCategory, setNewScheduleCategory] = useState<'music' | 'art' | 'vip' | 'keynote'>('music');
 
-  // Track Firebase Auth state
+  // Track Firebase Auth state & enforce admin authorization
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user: any) => {
-      setIsAuthenticated(!!user);
+      if (user && user.email) {
+        const userEmail = user.email.toLowerCase().trim();
+        if (ALLOWED_ADMIN_EMAILS.length === 0 || ALLOWED_ADMIN_EMAILS.includes(userEmail)) {
+          setIsAuthenticated(true);
+        } else {
+          console.warn('⚠️ [Admin Security]: Unauthorized user signed out:', userEmail);
+          signOut(auth);
+          setIsAuthenticated(false);
+        }
+      } else {
+        setIsAuthenticated(false);
+      }
       setAuthChecked(true);
     });
     return () => unsubscribeAuth();
@@ -167,15 +182,32 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
     e.preventDefault();
     setAuthError('');
     setAuthLoading(true);
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (ALLOWED_ADMIN_EMAILS.length > 0 && !ALLOWED_ADMIN_EMAILS.includes(cleanEmail)) {
+      setAuthError('Access denied: Unauthorized admin email address.');
+      setAuthLoading(false);
+      return;
+    }
+
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(auth, cleanEmail, password);
     } catch (err: any) {
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-      } catch (createErr: any) {
-        console.error('🔐 [Admin Auth Error]:', createErr || err);
-        setAuthError('Authentication failed. Check your email & password.');
+      console.error('🔐 [Admin Auth Error]:', err);
+      // If account does not exist in Firebase Auth for authorized admin email, create it
+      if (
+        ALLOWED_ADMIN_EMAILS.includes(cleanEmail) &&
+        (err?.code === 'auth/user-not-found' || err?.code === 'auth/invalid-credential')
+      ) {
+        try {
+          await createUserWithEmailAndPassword(auth, cleanEmail, password);
+          return;
+        } catch (createErr: any) {
+          console.error('🔐 [Admin Auth Error on Create]:', createErr);
+        }
       }
+      setAuthError('Authentication failed. Invalid email or password.');
     } finally {
       setAuthLoading(false);
     }
@@ -183,6 +215,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
 
   const handleLogout = async () => {
     await signOut(auth);
+    setIsAuthenticated(false);
+    setEmail('');
+    setPassword('');
     setOrders([]);
   };
 
@@ -473,9 +508,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                 Sign in with your admin account to verify transaction references, approve tickets, and manage event operations.
               </p>
 
-              <form onSubmit={handleLogin} className="w-full max-w-sm flex flex-col gap-4">
+              <form onSubmit={handleLogin} autoComplete="off" className="w-full max-w-sm flex flex-col gap-4">
                 <input
                   type="email"
+                  name="admin_email"
+                  autoComplete="off"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -484,6 +521,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                 />
                 <input
                   type="password"
+                  name="admin_password"
+                  autoComplete="new-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
