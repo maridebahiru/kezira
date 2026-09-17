@@ -976,16 +976,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ isOpen, onClose 
                           Tamper-evident, timestamped operational report logging every order, admin action, gate scan, and system modification.
                         </p>
                       </div>
-                      <button
-                        onClick={async () => {
-                          if (window.confirm('Are you sure you want to clear audit history? This action will be logged.')) {
-                            await ticketService.clearAuditLogs(currentAdminEmail);
-                          }
-                        }}
-                        className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-rose-900/40 text-slate-400 hover:text-rose-300 border border-slate-800 text-3xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" /> CLEAR AUDIT LOGS
-                      </button>
                     </div>
 
                     {/* Stats Metrics Grid */}
