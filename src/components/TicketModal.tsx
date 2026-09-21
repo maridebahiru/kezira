@@ -23,6 +23,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { eventConfig, TicketTier } from '../config/event';
+import { PAYMENT_METHODS } from '../config/paymentMethods';
 import { ticketService, OrderRecord } from '../services/ticketService';
 import enkuuLogo from '../assets/enkuu.png';
 import papaGardenLogo from '../assets/papa.png';
@@ -222,7 +223,7 @@ export const TicketModal: React.FC<TicketModalProps> = ({
   const [customerName, setCustomerName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<OrderRecord['paymentMethod']>('Telebirr');
+  const [paymentMethod, setPaymentMethod] = useState<OrderRecord['paymentMethod']>('Bank of Abyssinia (BOA)');
   const [transactionRef, setTransactionRef] = useState<string>('');
   const [referralSource, setReferralSource] = useState<string>('Instagram');
   const [referralCode, setReferralCode] = useState<string>('');
@@ -497,29 +498,22 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                      <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
-                        <span className="font-bold text-amber-900 block text-2xs uppercase">TELEBIRR</span>
-                        <span className="text-sm font-bold text-slate-900 block">+251 94 295 3270</span>
-                        <span className="text-3xs text-slate-600 block">Account: Abel Zigyalew</span>
-                      </div>
-
-                      <div className="p-3 rounded-xl bg-blue-50 border border-blue-200">
-                        <span className="font-bold text-blue-900 block text-2xs uppercase">CBE (COMMERCIAL BANK)</span>
-                        <span className="text-sm font-bold text-slate-900 block">1000079215035</span>
-                        <span className="text-3xs text-slate-600 block">Account: Abel Zigyalew</span>
-                      </div>
-
-                      <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
-                        <span className="font-bold text-emerald-900 block text-2xs uppercase">AWASH BANK</span>
-                        <span className="text-sm font-bold text-slate-900 block">013201015231203</span>
-                        <span className="text-3xs text-slate-600 block">Account: Abel Zigyalew</span>
-                      </div>
-
-                      <div className="p-3 rounded-xl bg-purple-50 border border-purple-200">
-                        <span className="font-bold text-purple-900 block text-2xs uppercase">EBIRR</span>
-                        <span className="text-sm font-bold text-slate-900 block">+251 94 295 3270</span>
-                        <span className="text-3xs text-slate-600 block">Account: Abel Zigyalew</span>
-                      </div>
+                      {PAYMENT_METHODS.map((pm) => (
+                        <div
+                          key={pm.id}
+                          className={`p-3 rounded-xl ${pm.bgClass} border ${pm.borderClass}`}
+                        >
+                          <span className={`font-bold ${pm.textClass} block text-2xs uppercase`}>
+                            {pm.name}
+                          </span>
+                          <span className="text-sm font-bold text-slate-900 block font-mono">
+                            {pm.accountNumber}
+                          </span>
+                          <span className="text-3xs text-slate-600 block">
+                            Account: {pm.accountName}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
@@ -564,10 +558,11 @@ export const TicketModal: React.FC<TicketModalProps> = ({
                         onChange={(e) => setPaymentMethod(e.target.value as OrderRecord['paymentMethod'])}
                         className="w-full py-2.5 px-3 rounded-xl bg-white border border-slate-300 text-xs font-mono text-slate-900 focus:outline-none focus:border-amber-500"
                       >
-                        <option value="Telebirr">Telebirr (+251 94 295 3270)</option>
-                        <option value="CBE (Commercial Bank)">CBE (1000079215035)</option>
-                        <option value="Awash Bank">Awash Bank (013201015231203)</option>
-                        <option value="ebirr">ebirr (+251 94 295 3270)</option>
+                        {PAYMENT_METHODS.map((pm) => (
+                          <option key={pm.id} value={pm.name}>
+                            {pm.selectOptionText}
+                          </option>
+                        ))}
                       </select>
                     </div>
 

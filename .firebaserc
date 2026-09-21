@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "events-4f122"
+  },
+  "targets": {
+    "events-4f122": {
+      "hosting": {
+        "mamsha-fest": [
+          "mamsha-fest"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

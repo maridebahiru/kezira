@@ -21,7 +21,7 @@ export interface OrderRecord {
   tierId: string;
   quantity: number;
   totalETB: number;
-  paymentMethod: 'Telebirr' | 'CBE (Commercial Bank)' | 'Awash Bank' | 'ebirr' | string;
+  paymentMethod: 'Bank of Abyssinia (BOA)' | 'Telebirr' | 'CBE (Commercial Bank)' | 'Awash Bank' | 'ebirr' | string;
   transactionRef: string;
   purchaseDate: string;
   status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'CHECKED_IN';
